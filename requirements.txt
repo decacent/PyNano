@@ -1,0 +1,6 @@
+matplotlib==2.1.0
+npTDMS==0.11.3
+numpy==1.13.3
+PyQt5==5.9.1
+requests==2.18.4
+scipy==0.19.1

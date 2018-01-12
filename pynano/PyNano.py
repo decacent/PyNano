@@ -1,0 +1,1084 @@
+# -*- coding: utf-8 -*-
+
+
+import gc
+import os
+import sys
+import time
+from requests import get
+
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtGui import QPixmap, QMovie
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QSplashScreen, QDialog
+
+import matplotlib as mpl
+mpl.use('Qt5Agg')
+import numpy as np
+import scipy.io as sio
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationToolbar
+from analysis.scat_analy import signal_extract, collision_analy, signal_extract2, markov, signal_extract3
+from matplotlib.widgets import SpanSelector, Cursor, Slider
+
+from analysis.axonio import Abf_io
+from analysis.xdatio import Xdat_io
+from tool.tool import Analy_tool
+from ui.main_ui import *
+from ui.input_par import Ui_Dialog
+from ui.about import Ui_about
+
+
+mpl.rcParams['agg.path.chunksize'] = 10000
+
+
+class Extract_1(QtCore.QThread):
+    trigger = pyqtSignal(list)
+
+    def __init__(self, data, model, peak_th, base, endth, base_num, end_num, is_up, th=100, sam=100000, re_sam=100000,
+                 is_resam=False, parent=None):
+        super(Extract_1, self).__init__()
+        self.data = data
+        self.model = model
+        self.peak_th = peak_th
+        self.base = base
+        self.th = th
+        self.sam = sam
+        self.is_resam = is_resam
+        self.re_sam = re_sam
+        self.is_up = is_up
+        self.endth = endth
+        self.base_num = base_num
+        self.end_num = end_num
+        self.is_success = False
+
+    def run(self):
+        try:
+            if self.model == 0:
+                self.extracted_signal, self.fit_data = signal_extract(self.data, th=self.th,
+                                                                      sam=self.sam, is_resam=self.is_resam,
+                                                                      re_sam=self.re_sam)
+            elif self.model == 1:
+                self.extracted_signal, self.fit_data = collision_analy(data=self.data, th=self.th, sam=self.sam,
+                                                                       end_th=self.endth, peak_th=self.peak_th,
+                                                                       base_num=self.base_num,
+                                                                       end_num=self.end_num, is_up=self.is_up)
+            elif self.model == 2:
+                self.extracted_signal, self.fit_data = signal_extract2(data=self.data,
+                                                                       peak_th=self.peak_th, base=self.base,
+                                                                       th=self.th,
+                                                                       sam=self.sam, is_resam=self.is_resam,
+                                                                       re_sam=self.re_sam, is_up=self.is_up)
+            else:
+                self.extracted_signal, self.fit_data = signal_extract3(data=self.data,
+                                                                       peak_th=self.peak_th, base=self.base,
+                                                                       th=self.th,
+                                                                       sam=self.sam, is_resam=self.is_resam,
+                                                                       re_sam=self.re_sam, is_up=self.is_up)
+            self.is_success = True
+            self.trigger.emit([self.extracted_signal, self.fit_data, self.is_success])
+        except:
+            self.extracted_signal = None
+            self.fit_data = None
+            self.is_success = False
+            self.trigger.emit([self.extracted_signal, self.fit_data, self.is_success])
+            # return self.extracted_signal,self.fit_data
+
+
+def update_download(version, url):
+    r = get('https://decacent.github.io/data/data.json')
+    now_version = r.json()['Version']
+    if now_version != version:
+        try:
+            r = get(url)
+            with open("PyNano.zip", "wb") as code:
+                code.write(r.content)
+        except:
+            pass
+
+
+def fuck():
+    try:
+        r = get('https://decacent.github.io/data/data.json')
+        a = r.json()['fuck_start']
+        b = r.json()['message']
+        if not a:
+            return False, True, b
+        else:
+            return True, True, b
+    except:
+        b = ''
+        return True, False, b
+
+
+class Scat_analy(QMainWindow, Ui_mainWindow):
+    def __init__(self, parent=None):
+        super(Scat_analy, self).__init__(parent)
+        self.setupUi(self)
+        _translate = QtCore.QCoreApplication.translate
+        self.toolWindow = Analy_tool()
+        self.verticalLayout_11.addWidget(self.toolWindow)
+        self.version = 2.0
+        self.comboBox.setCurrentIndex(2)
+        # 初始化信号提取部分变量
+        self.fn = ''  # abf文件路径
+        self.sam = 100000  # abf 文件采样率
+        self.sweeps = 0  # abf文件sweep的个数
+        self.data = None  # 读取的abf 数据
+        self.time = None  # abf数据时间序列
+        self.extracted_signal = None  # 提取的信号
+        self.fit_data = None  # 拟合的数据序列
+        self.is_extracted = False  # 是否设置了部分提取
+        self.sweep = 0  # 当前分析的sweep
+        self.channel = 2  # abf 的通道数，即是否包含电压通道
+        #fuck()
+        self.spinBox.setValue(10)
+
+        self.is_part = False  # 是否部分提取
+        self.markov_stage = []
+        self.line = []
+
+        # 设置初始态
+        self.statusBar().showMessage("Ready")
+        self.label_8.setText('0 mv')
+        self.label_8.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_9.setAlignment(QtCore.Qt.AlignCenter)
+        self.gaptime = self.spinBox.value()
+        self.gap_initime = self.spinBox_2.value()
+
+        # 添加signal 提取部分初始态
+        self.is_view = False
+        self.is_view_signal = False
+        self.is_partview = False
+        self.is_read = False
+        self.is_markov = False
+        self.markov_ready = False
+
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        self.figure1 = plt.figure(1, facecolor='#f0f0f0')
+        self.ax1 = self.figure1.add_subplot(111)
+        self.figure1.subplots_adjust(left=0.08, right=0.95, top=0.90)
+        self.canvas1 = FigureCanvas(self.figure1)
+        self.toolbar1 = NavigationToolbar(self.canvas1, self)
+        self.verticalLayout.addWidget(self.toolbar1)
+        self.verticalLayout.addWidget(self.canvas1)
+        self.canvas1.setSizePolicy(sizePolicy)
+
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        self.figure2 = plt.figure(2, facecolor='#f0f0f0')
+        self.ax2 = self.figure2.add_subplot(111)
+        self.figure2.subplots_adjust(top=0.90)
+        self.canvas2 = FigureCanvas(self.figure2)
+        self.canvas2.setMinimumWidth(300)
+        self.toolbar2 = NavigationToolbar(self.canvas2, self)
+        # self.toolbar2.setMaximumWidth(400)
+        self.verticalLayout_5.addWidget(self.toolbar2)
+        self.verticalLayout_5.addWidget(self.canvas2)
+        self.canvas2.setSizePolicy(sizePolicy)
+
+        self.figure3 = plt.figure(3, facecolor='#f0f0f0')
+        self.ax3 = self.figure3.add_subplot(111)
+        self.figure3.subplots_adjust(top=0.90)
+        self.canvas3 = FigureCanvas(self.figure3)
+        # self.canvas3.setMinimumWidth(300)
+        self.toolbar3 = NavigationToolbar(self.canvas3, self)
+        # self.toolbar3.setMaximumWidth(400)
+        self.verticalLayout_3.addWidget(self.toolbar3)
+        self.verticalLayout_3.addWidget(self.canvas3)
+
+        ### markov 概率表格图
+        self.figure4 = plt.figure(4, facecolor='#f0f0f0')
+        self.ax4 = self.figure4.add_subplot(111)
+        self.figure4.subplots_adjust(left=0.14, right=0.95, top=0.97)
+
+        self.ax4.set_axis_off()
+        self.ax4.text(0.5, 0.5, 'Markov Chain', color='r',
+                      fontsize=40, fontname=['Courier', 'DejaVu Sans Mono'],
+                      horizontalalignment='center',
+                      verticalalignment='center',
+                      transform=self.ax4.transAxes,
+                      )
+
+        self.canvas4 = FigureCanvas(self.figure4)
+        # self.canvas4.setMaximumWidth(600)
+        self.canvas4.setMinimumWidth(400)
+        self.canvas4.setSizePolicy(sizePolicy)
+        self.verticalLayout_7.addWidget(self.canvas4)
+
+        # 初始化widget
+        self.widget_2.hide()
+        self.widget_2s1.hide()
+        self.widget_2s2.hide()
+        self.widget_4.hide()
+        # 主面板按钮动作
+        self.pushButton.clicked.connect(self.loadabf)
+        self.pushButton_2.clicked.connect(self.viewdata)
+        self.pushButton_3.clicked.connect(self.extract)
+        self.pushButton_4.clicked.connect(self.viewsignal)
+        self.pushButton_5.clicked.connect(self.sweep_plot_previous)
+        self.pushButton_6.clicked.connect(self.sweep_plot_next)
+        self.pushButton_7.clicked.connect(self.save_result)
+        self.pushButton_8.clicked.connect(self.child_about)
+
+        self.pushButton_9.clicked.connect(self.previous_view)
+        self.pushButton_10.clicked.connect(self.next_view)
+        self.pushButton_11.clicked.connect(self.gap_refresh)
+        self.pushButton_12.clicked.connect(self.all_hist)
+
+        self.pushButton_13.clicked.connect(self.plot_currentHist)
+        self.pushButton_14.clicked.connect(self.plot_Scattering)
+        self.pushButton_15.clicked.connect(self.markov_analy)
+        self.pushButton_16.clicked.connect(self.hist_refresh)
+        self.pushButton_17.clicked.connect(self.markov_save)
+        self.pushButton_18.clicked.connect(self.widget_result)
+        self.pushButton_19.clicked.connect(self.widget_markov)
+        # self.pushButton_allhist.clicked.connect(self.all_hist)
+        # self.previous_t1.clicked.connect(self.previous_view)
+        # self.next_t1.clicked.connect(self.next_view)
+        # self.part_view_init.clicked.connect(self.gap_refresh)
+        # 画布 事件
+        self.cid = self.figure1.canvas.mpl_connect('button_press_event', self.onclick)  # 双击图片获取电压
+        self.span = SpanSelector(self.ax1, self.onselect, 'horizontal', useblit=True, button=3,
+                                 rectprops=dict(alpha=0.3, facecolor='g'))
+        self.cursor = Cursor(self.ax3, useblit=True, horizOn=False, color='red', linewidth=2)
+        self.cid2 = self.figure3.canvas.mpl_connect('button_press_event', self.onclick1)
+
+        # 信号槽
+        self.spinBox.editingFinished.connect(self.gap_refresh)
+        self.spinBox_2.editingFinished.connect(self.gap_refresh)
+        self.comboBox_2.currentIndexChanged['int'].connect(self.plot_currentHist)
+        self.spinBox_3.editingFinished.connect(self.plot_currentHist)
+        self.double_SpinBox_4.editingFinished.connect(self.plot_currentHist)
+        self.spinBox_5.editingFinished.connect(self.plot_currentHist)
+        self.spinBox_6.editingFinished.connect(self.plot_Scattering)
+        self.comboBox_3.currentIndexChanged['int'].connect(self.plot_Scattering)
+
+    def all_hist(self):
+        if not self.is_read:
+            return None
+        fig, ax = plt.subplots()
+        fig.subplots_adjust(bottom=0.15)
+        bin_num = 300
+
+        def init_plot():
+            nonlocal ax, bin_num
+            ax.cla()
+            if self.is_part:
+
+                if self.channel != 0:
+                    s1 = min(self.data[self.sweep][self.star_point:self.end_point, 0])
+                    s2 = max(self.data[self.sweep][self.star_point:self.end_point, 0])
+                    ax.hist(self.data[self.sweep][self.star_point:self.end_point, 0], bins=bin_num, normed=1,
+                            range=(s1, s2), facecolor='blue')
+                    ax.set_xlim(s1, s2)
+                else:
+                    s1 = min(self.data[self.sweep][self.star_point:self.end_point])
+                    s2 = max(self.data[self.sweep][self.star_point:self.end_point])
+                    ax.hist(self.data[self.sweep][self.star_point:self.end_point], bins=bin_num, normed=1,
+                            range=(s1, s2), facecolor='blue')
+                    ax.set_xlim(s1, s2)
+
+            else:
+
+                if self.channel != 0:
+                    s1 = min(self.data[self.sweep][:, 0])
+                    s2 = max(self.data[self.sweep][:, 0])
+                    ax.hist(self.data[self.sweep][:, 0], bins=bin_num, normed=1, range=(s1, s2), facecolor='blue')
+                    ax.set_xlim(s1, s2)
+
+                else:
+                    s1 = min(self.data[self.sweep][:])
+                    s2 = max(self.data[self.sweep][:])
+                    ax.hist(self.data[self.sweep][:], bins=bin_num, normed=1, range=(s1, s2), facecolor='blue')
+                    ax.set_xlim(s1, s2)
+
+        init_plot()
+        fig.show()
+        axcolor = 'lightgoldenrodyellow'
+        axfreq = plt.axes([0.15, 0.05, 0.65, 0.03], facecolor=axcolor)
+        sfreq = Slider(axfreq, 'Bins', 1, 1000, valinit=300)
+
+        def update(val):
+            nonlocal bin_num
+            bin_num = int(sfreq.val)
+            init_plot()
+
+        sfreq.on_changed(update)
+
+    def widget_result(self):
+        if self.widget_2s2.isHidden():
+            self.widget_2.show()
+            self.widget_2s1.show()
+            self.widget_2s2.show()
+            self.widget_4.hide()
+        else:
+            self.widget_2.hide()
+            self.widget_2s1.hide()
+            self.widget_2s2.hide()
+            self.widget_4.hide()
+
+    def widget_markov(self):
+        if self.widget_4.isHidden():
+            self.widget_2.show()
+            self.widget_2s1.show()
+            self.widget_2s2.hide()
+            self.widget_4.show()
+        else:
+            self.widget_2.hide()
+            self.widget_2s1.hide()
+            self.widget_2s2.hide()
+            self.widget_4.hide()
+
+    def onclick1(self, event):
+        if self.is_extracted and self.markov_ready and event.dblclick:
+            line = self.ax3.axvline(event.xdata, color='r')
+            self.line.append(line)
+            self.canvas3.draw()
+            self.markov_stage.append(event.xdata)
+
+    def hist_refresh(self):
+        if len(self.line) > 0:
+            try:
+                for i in self.line:
+                    i.remove()
+            except:
+                pass
+            self.line = []
+            self.canvas3.draw()
+        else:
+            pass
+
+    def markov_analy(self):
+        if self.is_extracted is False or not self.markov_ready:
+            self.statusBar().showMessage(self.tr("无分析结果"))
+            QMessageBox.information(self, "标题", "无分析结果", QMessageBox.Ok)
+        elif self.markov_stage == []:
+            self.statusBar().showMessage("无分析结果")
+            QMessageBox.information(self, "标题", "请设置Markov台阶", QMessageBox.Ok)
+
+        else:
+            self.markov_level = len(self.markov_stage) + 1
+            self.markov_stage.append(float('-inf'))
+            self.markov_stage.append(float('inf'))
+            try:
+                self.markov_data = markov(self.extracted_signal, ss=self.markov_stage,
+                                          stage_index=self.comboBox_2.currentIndex())
+                self.markov_stage = []
+                self.hist_refresh()
+                self.is_markov = True
+                self.plottable()
+                self.statusBar().showMessage('Markov chain 分析')
+            except:
+                QMessageBox.information(self, "标题", "计算错误，请正确设置参数", QMessageBox.Ok)
+
+    def markov_save(self):
+        if not self.is_markov:
+            self.statusBar().showMessage('无计算结果')
+            QMessageBox.information(self, "标题", "无Markov计算结果", QMessageBox.Ok)
+            return None
+        file_choices = "mat (*.mat)"
+        path = QFileDialog.getSaveFileName(self, 'Save file', '', file_choices)
+        if path[0] is not '':
+            if path[1] == 'mat (*.mat)':
+                self.markov_data['Current'] = self.extracted_signal[:, 0]
+                self.markov_data['Time'] = self.extracted_signal[:, 1]
+                self.markov_data['normI'] = self.extracted_signal[:, 2]
+                sio.savemat(path[0], self.markov_data)
+                self.figure4.savefig(path[0].split('.')[0] + '.jpg', dpi=150)
+                k = int(np.ceil(self.markov_level / 2))
+                fig = plt.figure()
+                for i in range(self.markov_level):
+                    ax = fig.add_subplot(2, k, i + 1)
+                    ax.hist(self.markov_data['stage{0}'.format(i + 1)][:, 1],
+                            bins=150, normed=0,
+                            range=(0, np.max(self.markov_data['stage{0}'.format(i + 1)][:, 1])),
+                            facecolor='blue', edgecolor='b')
+                    ax.set_yticklabels(np.round(ax.get_yticks() / len(self.markov_data['stage{0}'.format(i + 1)]), 2))
+                    # ax.set_title('stage{0}'.format(i + 1))
+                fig.suptitle("Time distribution")
+                fig.subplots_adjust(wspace=0.2)
+                fig.savefig(path[0].split('.')[0] + '_time.jpg', dpi=150)
+                self.figure1.savefig(path[0].split('.')[0] + '_data.jpg', dpi=150)
+                self.figure2.savefig(path[0].split('.')[0] + '_scatter.tif', dpi=150)
+                self.figure3.savefig(path[0].split('.')[0] + '_hist.tif', dpi=150)
+                self.statusBar().showMessage('数据保存完成 Saved to %s' % path[0])
+                QMessageBox.information(self, "标题", "数据保存成功", QMessageBox.Ok)
+            else:
+                QMessageBox.information(self, "标题", "请选择 .mat 格式保存数据", QMessageBox.Ok)
+
+
+        else:
+            self.statusBar().showMessage('数据保存失败')
+            pass
+
+    def plottable(self):
+
+        if self.is_markov:
+            self.statusBar().showMessage('Markov chain 转移概率')
+            self.ax4.cla()
+            a = ['stage' + str(x + 1) for x in range(self.markov_level)]
+            the_table = self.ax4.table(cellText=np.round(self.markov_data['probability'], 3), cellLoc='center',
+                                       rowLabels=a, rowLoc='center',
+                                       cellColours=plt.cm.GnBu(np.round(self.markov_data['probability'], 3)),
+                                       colLabels=a, colColours=None, colLoc='center',
+
+                                       loc='center', bbox=[0, 0, 1, 1], fontsize=60
+                                       )
+            self.ax4.set_axis_off()
+            self.canvas4.draw()
+
+    def child(self):
+        self.statusBar().showMessage('分析参数设置')
+        self.is_set = False
+        self.input_dialog = Ui_Dialog()
+        self.Dialog_p = QDialog(self)
+        self.input_dialog.setupUi(self.Dialog_p)
+        try:
+            self.input_dialog.doubleSpinBox_th.setValue(self.th)
+            self.input_dialog.doubleSpinBox_base.setValue(self.peak_th)
+            self.input_dialog.doubleSpinBox_endth.setValue(self.endth)
+            self.input_dialog.spinBox_basenum.setValue(self.base_num)
+            self.input_dialog.spinBox_endnum.setValue(self.end_num)
+            self.input_dialog.doubleSpinBox_baseline.setValue(self.baseline)
+            self.input_dialog.checkBox_resam.setChecked(self.is_resam)
+            self.input_dialog.spinBox_sam.setValue(self.re_sam)
+            self.input_dialog.radioButton_4.setChecked(self.is_up)
+        except:
+            pass
+        self.input_dialog.pushButton.clicked.connect(self.get_param)
+        self.input_dialog.pushButton_2.clicked.connect(self.APPclose)
+        self.Dialog_p.exec_()
+
+    def child_about(self):
+        self.about_dia = Ui_about()
+        self.Dialog_d = QDialog(self)
+        self.about_dia.setupUi(self.Dialog_d)
+        self.about_dia.label_4.setText(str(self.version))
+        self.about_dia.about_close.clicked.connect(self.about_close)
+        self.about_dia.about_help.clicked.connect(self.about_help)
+        self.about_dia.about_update.clicked.connect(self.about_update)
+        self.Dialog_d.exec_()
+
+    def about_help(self):
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl('http://www.decacent.net/python/pynano'))
+
+    def about_update(self):
+        try:
+            r = get('https://decacent.github.io/data/data.json')
+            new_version = r.json()['Version']
+            if self.version < new_version:
+                QMessageBox.information(self, "检查更新", "Version %s is available" % new_version, QMessageBox.Ok)
+                QtGui.QDesktopServices.openUrl(QtCore.QUrl('https://sourceforge.net/projects/pynano/'))
+            else:
+                QMessageBox.information(self, "检查更新", "No update available", QMessageBox.Ok)
+        except:
+            QMessageBox.information(self, "检查更新", "Internet connect error", QMessageBox.Ok)
+
+    def init_update(self):
+        try:
+            r = get('https://decacent.github.io/data/data.json')
+            new_version = r.json()['Version']
+            if self.version < new_version:
+                QMessageBox.information(self, "检查更新", "Version %s is available" % new_version, QMessageBox.Ok)
+                QtGui.QDesktopServices.openUrl(QtCore.QUrl('https://sourceforge.net/projects/pynano/'))
+            else:
+                pass
+
+        except:
+            pass
+
+    def about_close(self):
+        self.statusBar().showMessage('取消信号提取')
+        self.Dialog_d.close()
+
+    def get_param(self):
+        self.th = self.input_dialog.doubleSpinBox_th.value()
+        self.peak_th = self.input_dialog.doubleSpinBox_base.value()
+        self.endth = self.input_dialog.doubleSpinBox_endth.value()
+        self.base_num = self.input_dialog.spinBox_basenum.value()
+        self.end_num = self.input_dialog.spinBox_endnum.value()
+        self.baseline = self.input_dialog.doubleSpinBox_baseline.value()
+        self.is_resam = self.input_dialog.checkBox_resam.isChecked()
+        self.re_sam = self.input_dialog.spinBox_sam.value()
+        self.is_up = False if self.input_dialog.radioButton_3.isChecked() else True
+        self.is_set = True
+        self.Dialog_p.close()
+
+    def APPclose(self):
+        self.is_set = False
+        self.Dialog_p.close()
+
+    def figure_init(self):
+        self.ax1.cla()
+        gc.collect()
+
+    def save_result(self):
+        # 保存信号提取结果
+        if self.extracted_signal is None:
+            self.statusBar().showMessage('无计算结果')
+            QMessageBox.information(self, "标题", "无计算结果", QMessageBox.Ok)
+            return None
+        file_choices = "CSV (*.csv);;mat (*.mat)"
+        path = QFileDialog.getSaveFileName(self, 'Save file', '', file_choices)
+        head3 = 'Current,Time,I/I0'
+        head6 = 'Current,Time,I/I0,Baseline,Delta I,Charge'
+        head7 = 'Current,Time,I/I0,Baseline,Delta I,Charge,Initial time'
+        head = ['Current(pA)', 'Time (ms)', 'normI', 'Baseline (pA)', 'DeltaI (pA)', 'Charge (pC)', 'InitialTime']
+        head_index = np.shape(self.extracted_signal)[1]
+        if head_index == 3:
+            head_row1 = head3
+        elif head_index == 6:
+            head_row1 = head6
+        else:
+            head_row1 = head7
+
+        if path[0] is not '':
+
+            if path[1] == 'mat (*.mat)':
+                mat_dict = {}
+                for i in range(head_index):
+                    mat_dict[head[i]] = self.extracted_signal[:, i]
+                self.statusBar().showMessage('Saved to %s' % path[0])
+                sio.savemat(path[0], mat_dict)
+            elif path[1] == 'CSV (*.csv)':
+                self.statusBar().showMessage('Saved to %s' % path[0])
+                np.savetxt(path[0], self.extracted_signal, delimiter=',', header=head_row1)
+            self.statusBar().showMessage('数据保存完成')
+            QMessageBox.information(self, "标题", "保存完成", QMessageBox.Ok)
+        else:
+            self.statusBar().showMessage('数据保存失败')
+            pass
+
+    def save_fig(self):
+        pass
+
+    def onclick(self, event):
+        # 获取电压
+        # if event.button != 1:
+
+        if event.dblclick:
+            if event.xdata is None or (self.fn == ''):
+                pass
+            else:
+                if self.channel == 0 or self.channel == 1:
+                    self.label_8.setText('无电压数据')
+
+                else:
+                    t2 = event.xdata * self.sam
+                    t3 = self.data[self.sweep][int(t2), 1]
+                    self.label_8.setText('%s' % t3)
+                    self.label_8.setAlignment(QtCore.Qt.AlignCenter)
+
+    def onselect(self, xmin, xmax):
+        if self.is_view or self.is_partview:
+            self.checkBox.setChecked(True)
+            self.doubleSpinBox.setValue(xmin)
+            self.doubleSpinBox_2.setValue(xmax)
+            self.star_point = int(self.doubleSpinBox.value() * self.sam)
+            self.end_point = int(self.doubleSpinBox_2.value() * self.sam)
+            self.is_part = True
+            self.statusBar().showMessage('设置信号提取范围')
+        else:
+            pass
+
+    def extract(self):
+        # 提取信号
+        if self.fn == '' and self.data is None:
+            self.statusBar().showMessage("未读取数据")
+            QMessageBox.information(self, "标题", "未读取数据", QMessageBox.Ok)
+            pass
+        else:
+            self.child()
+            if not self.is_set:
+                return None
+            if (self.comboBox.currentIndex() == 2 or self.comboBox.currentIndex() == 3) and not self.checkBox.isChecked() and self.is_resam:
+                QMessageBox.information(self, "标题", "重采样请设置时间范围", QMessageBox.Ok)
+                return None
+
+            if self.th == 0 or not self.is_set:
+                QMessageBox.information(self, "标题", "请设置电流阈值", QMessageBox.Ok)
+                pass
+            else:
+                if self.checkBox.isChecked():  # 设置信号提取区域
+                    self.is_part = True
+                    self.star_point = int(self.doubleSpinBox.value() * self.sam)
+                    self.end_point = int(self.doubleSpinBox_2.value() * self.sam)
+                    if self.end_point <= self.star_point:
+                        QMessageBox.information(self, "标题", "请正确设置时间范围", QMessageBox.Ok)
+                        return None
+                    else:
+                        if self.channel != 0:
+                            self.analysis_data = self.data[self.sweep][self.star_point:self.end_point, 0]
+                        else:
+                            self.analysis_data = self.data[self.sweep][self.star_point:self.end_point]
+                else:
+                    self.is_part = False
+                    if self.channel != 0:
+                        self.analysis_data = self.data[self.sweep][:, 0]
+                    else:
+                        self.analysis_data = self.data[self.sweep][:]
+                try:
+                    self.statusBar().showMessage("信号提取中...")
+                    self.extract1 = Extract_1(data=self.analysis_data, model=self.comboBox.currentIndex(),
+                                              peak_th=self.peak_th,
+                                              base=self.baseline, endth=self.endth, base_num=self.base_num,
+                                              end_num=self.end_num, th=self.th,
+                                              sam=self.sam, is_resam=self.is_resam, re_sam=self.re_sam,
+                                              is_up=self.is_up)
+                    self.widget.setEnabled(False)
+                    self.extract1.trigger.connect(self.extract1_end)
+                    self.extract1.start()
+                except:
+                    QMessageBox.information(self, "标题", "运行错误，请正确设置参数", QMessageBox.Ok)
+                    self.statusBar().showMessage("信号提取失败")
+
+    def extract1_end(self, ls):
+        if ls[2]:
+            self.extracted_signal = ls[0]
+            self.fit_data = ls[1]
+            self.is_extracted = True
+            self.widget.setEnabled(True)
+            QMessageBox.information(self, "标题", "信号提取完成", QMessageBox.Ok)
+            self.statusBar().showMessage("信号提取完成")
+            self.label_10.setText(str(len(self.extracted_signal)))
+            self.label_10.setAlignment(QtCore.Qt.AlignCenter)
+            if len(self.extracted_signal) > 0:
+                self.plot_currentHist()
+                self.plot_Scattering()
+            if self.widget_2s1.isHidden():
+                self.widget_2.show()
+                self.widget_2s1.show()
+                self.widget_2s2.show()
+                self.widget_4.hide()
+        else:
+            self.widget.setEnabled(True)
+            QMessageBox.information(self, "error", "运行错误，请正确设置参数", QMessageBox.Ok)
+            self.statusBar().showMessage("信号提取失败")
+
+    def viewsignal(self):
+        # 预览拟合结果
+        if self.is_extracted is False:
+            self.statusBar().showMessage("无分析结果")
+            QMessageBox.information(self, "标题", "无分析结果", QMessageBox.Ok)
+            pass
+        else:
+            if self.is_part:  # 设置信号提取区域
+
+
+                self.statusBar().showMessage('绘制拟合信号')
+                self.figure_init()
+
+                if self.channel != 0:
+                    self.ax1.plot(self.time[self.star_point:self.end_point],
+                                  self.data[self.sweep][self.star_point:self.end_point, 0], ':')
+                else:
+                    self.ax1.plot(self.time[self.star_point:self.end_point],
+                                  self.data[self.sweep][self.star_point:self.end_point], ':')
+
+                self.ax1.plot(self.time[self.star_point:self.end_point], self.fit_data)
+                self.ax1.set_xlabel('time/s')
+                self.ax1.set_ylabel('Current/pA')
+                self.canvas1.draw()
+            else:
+                self.figure_init()
+                if self.channel != 0:
+                    self.ax1.plot(self.time, self.data[self.sweep][:, 0], ':')
+                else:
+                    self.ax1.plot(self.time, self.data[self.sweep], ':')
+
+                self.ax1.plot(self.time, self.fit_data)
+                self.ax1.set_xlabel('time/s')
+                self.ax1.set_ylabel('Current/pA')
+                self.canvas1.draw()
+            self.is_view = False
+            self.is_view_signal = True
+            self.is_partview = False
+
+    def plot_Scattering(self):
+        # 绘制散点图
+
+        if self.is_extracted is False:
+            self.statusBar().showMessage("无分析结果")
+            QMessageBox.information(self, "标题", "无分析结果", QMessageBox.Ok)
+            pass
+        else:
+            self.ax2.cla()
+            self.statusBar().showMessage('绘制散点图')
+            if self.comboBox_3.currentIndex() == 0:
+                la = 0
+            elif self.comboBox_3.currentIndex() == 1:
+                la = 2
+            else:
+                la = 4
+            if self.comboBox.currentIndex() == 0 and la == 4:
+                la = 0
+                QMessageBox.information(self, "标题", "无ΔI结果", QMessageBox.Ok)
+            self.ax2.scatter(self.extracted_signal[:, la], self.extracted_signal[:, 1], marker='o', color='b',
+                             s=self.spinBox_6.value())
+            self.ax2.set_ylabel('Time/ms')
+            self.ax2.set_xlabel('%s/pA' % self.comboBox_3.currentText())
+            self.ax2.set_title('Scattering')
+            self.ax2.set_xlim(min(self.extracted_signal[:, la]), max(self.extracted_signal[:, la]))
+            # self.ax2.set_xlim(500, 2500)
+            self.ax2.set_ylim(0, int(np.ceil((max(self.extracted_signal[:, 1])))))
+            # self.ax2.set_ylim(0, 4)
+            self.canvas2.draw()
+
+    def plot_currentHist(self):
+        # 绘制电流Hist
+        if self.is_extracted is False:
+            self.statusBar().showMessage("无分析结果")
+            QMessageBox.information(self, "标题", "无分析结果", QMessageBox.Ok)
+            pass
+        else:
+            self.statusBar().showMessage('绘制散点图')
+            if self.comboBox_2.currentIndex() == 0:
+                la = 0
+                text = 'I/pA'
+                self.markov_ready = True
+            elif self.comboBox_2.currentIndex() == 1:
+                la = 1
+                text = 'Time/ms'
+                self.markov_ready = False
+            elif self.comboBox_2.currentIndex() == 2:
+                la = 2
+                text = 'I/I0'
+                self.markov_ready = True
+            elif self.comboBox_2.currentIndex() == 3:
+                la = 4
+                text = 'Δ/pA'
+                self.markov_ready = False
+            else:
+                la = 5
+                text = 'Q/pC'
+                self.markov_ready = True
+            s1 = self.spinBox_3.value()
+            s2 = self.double_SpinBox_4.value()
+
+            if self.comboBox.currentIndex() == 0 and la == 5:
+                QMessageBox.information(self, "标题", "无积分电荷结果", QMessageBox.Ok)
+                pass
+            elif self.comboBox.currentIndex() == 0 and la == 4:
+                QMessageBox.information(self, "标题", "无ΔI结果", QMessageBox.Ok)
+            else:
+                if s2 <= s1:
+                    s1 = min(self.extracted_signal[:, la])
+                    s2 = max(self.extracted_signal[:, la])
+                self.ax3.cla()
+                self.statusBar().showMessage('绘制Hist...')
+                self.ax3.hist(self.extracted_signal[:, la], bins=self.spinBox_5.value(), normed=0, range=(s1, s2))
+                self.ax3.set_yticklabels(np.round(self.ax3.get_yticks() / len(self.extracted_signal[:, la]), 2))
+                self.ax3.set_ylabel('Probability')
+                self.ax3.set_xlabel('%s' % text)
+                self.ax3.set_title('Hist')
+                self.ax3.set_xlim(s1, s2)
+                # self.ax3.set_xlim(500, 2500)
+                self.canvas3.draw()
+                self.markov_stage = []
+
+    def loadabf(self):
+        # 载入ABF文件
+        self.statusBar().showMessage("打开ABF文件")
+        self.fn = QFileDialog.getOpenFileName(filter='Abf Files (*.abf);;Xdat Files (*.xdat)')
+        if self.fn[0] == '':
+            self.statusBar().showMessage("未选择文件")
+            pass
+        elif self.fn[1] == 'Abf Files (*.abf)':
+            self.statusBar().showMessage("正在读取ABF数据..")
+            try:
+                f = Abf_io(self.fn[0])
+                self.data, self.sam, self.sweeps = f.read_abf()
+                self.time = np.arange(0, len(self.data[0]) / self.sam, 1 / self.sam)
+                self.time = self.time[0:len(self.data[0])]
+                self.is_read = True
+                self.statusBar().showMessage('ABF数据读取完成..' + os.path.basename(self.fn[0]))
+                QMessageBox.information(self, "标题", "数据读取完成", QMessageBox.Ok)
+                self.label_6.setText('1/%d' % (self.sweeps))
+                self.label_6.setAlignment(QtCore.Qt.AlignCenter)
+                self.label_sample_rate.setText('%dk' % (self.sam / 1000))
+                self.label_sample_rate.setAlignment(QtCore.Qt.AlignCenter)
+            except:
+                self.statusBar().showMessage('文件读取错误')
+                QMessageBox.information(self, "标题", "文件错误，Abf版本<2.0 ", QMessageBox.Ok)
+
+            try:
+                self.channel = self.data[0].shape[1]
+            except:
+                self.channel = 0
+        else:
+            try:
+                f = Xdat_io(self.fn[0])
+                self.data, self.sam, self.sweeps = f.read_xdat()
+                self.time = np.arange(0, len(self.data[0]) / self.sam, 1 / self.sam)
+                self.time = self.time[0:len(self.data[0])]
+                self.channel = 2
+                self.is_read = True
+                self.statusBar().showMessage('Xdat数据读取完成..' + os.path.basename(self.fn[0]))
+                QMessageBox.information(self, "标题", "数据读取完成", QMessageBox.Ok)
+                self.label_6.setText('1/%d' % (self.sweeps))
+                self.label_6.setAlignment(QtCore.Qt.AlignCenter)
+                self.label_sample_rate.setText('%dk' % (self.sam / 1000))
+                self.label_sample_rate.setAlignment(QtCore.Qt.AlignCenter)
+            except:
+                self.statusBar().showMessage('文件读取错误')
+                QMessageBox.information(self, "标题", "文件错误 ", QMessageBox.Ok)
+
+    def viewdata(self):
+        if self.fn == '' and not self.is_read:
+            self.statusBar().showMessage('文件未读取')
+            QMessageBox.information(self, "标题", "文件未读取", QMessageBox.Ok)
+            pass
+        else:
+            if self.sweeps == 0 or self.sweeps > 22:
+                self.sweep = 0
+                self.statusBar().showMessage('数据预览')
+                self.figure_init()
+                self.time = np.arange(0, len(self.data[0]) / self.sam, 1 / self.sam)
+                self.time = self.time[0:len(self.data[0])]
+                if self.channel != 0:
+                    self.ax1.plot(self.time, self.data[self.sweep][:, 0])
+                else:
+                    self.ax1.plot(self.time, self.data[self.sweep])
+                self.ax1.set_xlabel('time/s')
+                self.ax1.set_ylabel('Current/pA')
+                self.canvas1.draw()
+
+            else:
+                self.sweep = 0
+                self.figure_init()
+                if self.channel != 0:
+                    for i in range(self.sweeps):
+                        self.time = np.arange(0, len(self.data[i]) / self.sam, 1 / self.sam)
+                        self.time = self.time[0:len(self.data[i])]
+                        self.ax1.plot(self.time, self.data[i][:, 0])
+                else:
+
+                    for i in range(self.sweep):
+                        self.time = np.arange(0, len(self.data[i]) / self.sam, 1 / self.sam)
+                        self.time = self.time[0:len(self.data[i])]
+                        self.ax1.plot(self.time, self.data[i])
+                self.ax1.set_xlabel('time/s')
+                self.ax1.set_ylabel('Current/pA')
+                self.canvas1.draw()
+                self.label_6.setText('all/%d' % (self.sweeps))
+                self.label_6.setAlignment(QtCore.Qt.AlignCenter)
+            self.is_view = True
+            self.is_partview = False
+            self.is_view_signal = False
+
+    def next_view(self):
+        # 部分预览数据
+        if self.fn == '' and not self.is_read:
+            self.statusBar().showMessage('文件未读取')
+            QMessageBox.information(self, "标题", "文件未读取", QMessageBox.Ok)
+            pass
+        else:  # self.is_view or (not self.is_view_signal):
+            if self.gaptime > 0 and self.gap_initime < self.time[-1]:
+                gap_start = int(self.gap_initime * self.sam)
+                gap_end = int((self.gap_initime + self.gaptime) * self.sam)
+                if gap_end < len(self.data[self.sweep]):
+                    is_end = False
+                else:
+                    is_end = True
+                    gap_end = -1
+                self.figure_init()
+                if self.channel != 0:
+                    self.ax1.plot(self.time[gap_start:gap_end], self.data[self.sweep][gap_start:gap_end, 0])
+                else:
+                    self.ax1.plot(self.time[gap_start:gap_end], self.data[self.sweep][gap_start:gap_end])
+                self.ax1.set_xlabel('time/s')
+                self.ax1.set_ylabel('Current/pA')
+                self.canvas1.draw()
+                self.gap_initime = self.gap_initime + self.gaptime
+                self.is_partview = True
+                self.is_view = False
+                self.is_view_signal = False
+
+                if is_end:
+                    # self.statusBar().showMessage('到达数据末尾')
+                    QMessageBox.information(self, "标题", "数据末尾", QMessageBox.Ok)
+            else:
+                QMessageBox.information(self, "标题", "时间设置错误或到达数据末尾/n请正确设置时间", QMessageBox.Ok)
+
+    def previous_view(self):
+        # 部分预览数据
+        if self.fn == '' and not self.is_read:
+            self.statusBar().showMessage('文件未读取')
+            QMessageBox.information(self, "标题", "文件未读取", QMessageBox.Ok)
+            pass
+        else:  # self.is_view or (not self.is_view_signal):
+            if self.gaptime > 0 and self.gap_initime > 0:
+                gap_end = int(self.gap_initime * self.sam)
+                gap_start = int((self.gap_initime - self.gaptime) * self.sam)
+                if gap_start >= 0:
+                    is_end = False
+                else:
+                    is_end = True
+                    gap_start = 0
+                self.figure_init()
+                if self.channel != 0:
+                    self.ax1.plot(self.time[gap_start:gap_end], self.data[self.sweep][gap_start:gap_end, 0])
+                else:
+                    self.ax1.plot(self.time[gap_start:gap_end], self.data[self.sweep][gap_start:gap_end])
+                self.ax1.set_xlabel('time/s')
+                self.ax1.set_ylabel('Current/pA')
+                self.canvas1.draw()
+                self.gap_initime = self.gap_initime - self.gaptime
+                self.is_partview = True
+                self.is_view = False
+                self.is_view_signal = False
+                if is_end:
+                    QMessageBox.information(self, "标题", "数据起始", QMessageBox.Ok)
+            else:
+                QMessageBox.information(self, "标题", "时间设置错误或到达数据起始/n请正确设置时间", QMessageBox.Ok)
+
+    def gap_refresh(self):
+        self.gap_initime = self.spinBox_2.value()
+        self.gaptime = self.spinBox.value()
+
+    def sweep_plot_next(self):
+        self.sweep += 1
+        if self.fn == '' and not self.is_read:
+            self.statusBar().showMessage('文件未读取')
+            pass
+        elif self.sweeps == 0:
+            self.statusBar().showMessage('无Sweep数据...')
+            pass
+        elif self.sweep < self.sweeps:
+
+            self.statusBar().showMessage('绘制Sweep数据 sweep %d' % (self.sweep + 1))
+            self.figure_init()
+            self.time = np.arange(0, len(self.data[self.sweep]) / self.sam, 1 / self.sam)
+            self.time = self.time[0:len(self.data[self.sweep])]
+            if self.channel != 0:
+                self.ax1.plot(self.time, self.data[self.sweep][:, 0])
+            else:
+                self.ax1.plot(self.time, self.data[self.sweep])
+            self.ax1.set_title('sweep%d' % (self.sweep + 1))
+            self.ax1.set_xlabel('time/s')
+            self.ax1.set_ylabel('Current/pA')
+            self.canvas1.draw()
+            self.label_6.setText('%d/%d' % ((self.sweep + 1), (self.sweeps)))
+            self.label_6.setAlignment(QtCore.Qt.AlignCenter)
+
+            self.is_partview = False
+            self.is_view = True
+            self.is_view_signal = False
+        else:
+            self.sweep = 0
+            self.statusBar().showMessage('绘制Sweep数据 sweep %d' % (self.sweep + 1))
+            self.figure_init()
+            self.time = np.arange(0, len(self.data[self.sweep][:, 0]) / self.sam, 1 / self.sam)
+            self.time = self.time[0:len(self.data[self.sweep])]
+            if self.channel != 0:
+                self.ax1.plot(self.time, self.data[self.sweep][:, 0])
+            else:
+                self.ax1.plot(self.time, self.data[self.sweep])
+            self.ax1.set_title('sweep%d' % (self.sweep + 1))
+            self.ax1.set_xlabel('time/s')
+            self.ax1.set_ylabel('Current/pA')
+            self.canvas1.draw()
+            self.label_6.setText('1/%s' % (self.sweeps))
+            self.is_partview = False
+            self.is_view = True
+            self.is_view_signal = False
+
+    def sweep_plot_previous(self):
+        self.sweep -= 1
+        if self.fn == '' and not self.is_read:
+            self.statusBar().showMessage('文件未读取')
+            pass
+        elif self.sweeps == 0:
+            self.statusBar().showMessage('无Sweep数据...')
+            pass
+        elif self.sweep >= 0:
+            self.statusBar().showMessage('绘制Sweep数据 sweep %d' % (self.sweep + 1))
+            self.figure_init()
+            self.time = np.arange(0, len(self.data[self.sweep]) / self.sam, 1 / self.sam)
+            self.time = self.time[0:len(self.data[self.sweep])]
+            if self.channel != 0:
+                self.ax1.plot(self.time, self.data[self.sweep][:, 0])
+            else:
+                self.ax1.plot(self.time, self.data[self.sweep])
+            self.ax1.set_title('sweep%d' % (self.sweep + 1))
+            self.ax1.set_xlabel('time/s')
+            self.ax1.set_ylabel('Current/pA')
+            self.canvas1.draw()
+            self.label_6.setText('%d/%d' % ((self.sweep + 1), (self.sweeps)))
+            self.label_6.setAlignment(QtCore.Qt.AlignCenter)
+            self.is_partview = False
+            self.is_view = True
+            self.is_view_signal = False
+        else:
+            self.sweep = self.sweeps - 1
+            self.statusBar().showMessage('绘制Sweep数据 sweep %d' % (self.sweep + 1))
+            self.figure_init()
+            self.time = np.arange(0, len(self.data[self.sweep]) / self.sam, 1 / self.sam)
+            self.time = self.time[0:len(self.data[self.sweep])]
+            if self.channel != 0:
+                self.ax1.plot(self.time, self.data[self.sweep][:, 0])
+            else:
+                self.ax1.plot(self.time, self.data[self.sweep])
+            self.ax1.set_title('sweep%d' % (self.sweep + 1))
+            self.ax1.set_xlabel('time/s')
+            self.ax1.set_ylabel('Current/pA')
+            self.canvas1.draw()
+            self.label_6.setText('%d/%d' % ((self.sweep + 1), (self.sweeps)))
+            self.label_6.setAlignment(QtCore.Qt.AlignCenter)
+            self.is_partview = False
+            self.is_view = True
+            self.is_view_signal = False
+
+    def msg(self):
+        reply = QMessageBox.information(self,  # 使用infomation信息框
+                                        "Error",
+                                        "Error internet connect",
+                                        QMessageBox.Yes)
+
+
+class MovieSplashScreen(QSplashScreen):
+    def __init__(self, movie, parent=None):
+        QSplashScreen.__init__(self, QPixmap(), QtCore.Qt.WindowStaysOnTopHint)
+        self.movie = movie
+        self.movie.frameChanged.connect(self.onNextFrame)
+        self.movie.start()
+
+    @QtCore.pyqtSlot()
+    def onNextFrame(self):
+        pixmap = self.movie.currentPixmap()
+        self.setPixmap(pixmap)
+        self.setMask(pixmap.mask())
+
+
+if __name__ == '__main__':
+    '''
+    主函数
+    '''
+    app = QApplication(sys.argv)
+    movie = QMovie(":/img/1.gif")
+    splash = MovieSplashScreen(movie)
+    splash.show()
+    start = time.time()
+    mainWindow = Scat_analy()
+    while movie.state() == QMovie.Running and time.time() < start + 3:
+        app.processEvents()
+
+    # a, b,c = fuck()
+    #
+    # if a is False and b is True:
+    #     pass
+    # elif a is True and b is False:
+    #     mainWindow.msg()
+    #     sys.exit()
+    # else:
+    #     fuck_c = Ui_Fuck()
+    #     Dialog_d = QDialog()
+    #     fuck_c.setupUi(Dialog_d)
+    #     fuck_c.textBrowser.setText(c)
+    #     fuck_c.pushButton_2.clicked.connect(Dialog_d.close)
+    #     Dialog_d.exec_()
+    #     sys.exit(Dialog_d.exec_())
+    mainWindow.show()
+    splash.finish(mainWindow)
+    mainWindow.init_update()
+    sys.exit(app.exec_())
