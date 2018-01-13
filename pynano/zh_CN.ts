@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="2.0">
+<!DOCTYPE TS>
+<TS version="2.1" language="zh_CN" sourcelanguage="en_US">
 <context>
     <name>CaclNanopore</name>
     <message>
@@ -70,7 +71,7 @@ p, li { white-space: pre-wrap; }
 &lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;0&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="ui/calPore_ui.py" line="217"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:&apos;Calibri&apos;; font-size:20pt; font-style:italic;&quot;&gt;G=σ[4l/πd&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Calibri&apos;; font-size:20pt; font-style:italic; vertical-align:super;&quot;&gt;2&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Calibri&apos;; font-size:20pt; font-style:italic;&quot;&gt;+1/d]&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Calibri&apos;; font-size:20pt; font-style:italic; vertical-align:super;&quot;&gt;-1&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
@@ -168,8 +169,294 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>Scat_analy</name>
     <message>
-        <location filename="PyNano.py" line="354"/>
-        <source>&#xe6;&#x97;&#xa0;&#xe5;&#x88;&#x86;&#xe6;&#x9e;&#x90;&#xe7;&#xbb;&#x93;&#xe6;&#x9e;&#x9c;</source>
+        <location filename="PyNano.py" line="1024"/>
+        <source>Warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="259"/>
+        <source>Please save result,
+Exit really?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="398"/>
+        <source>No markov analysis result</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="966"/>
+        <source>Notice</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="378"/>
+        <source>Please setup Markov Chain stage</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="391"/>
+        <source>Markov chain analysis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="393"/>
+        <source>Errors</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="393"/>
+        <source>Please setup the right parameters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="552"/>
+        <source>Save Result</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="425"/>
+        <source>Saved to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="433"/>
+        <source>Save Success</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="856"/>
+        <source>Alert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="428"/>
+        <source>please save to .mat  format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="580"/>
+        <source>Save failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="439"/>
+        <source>Markov chain transfer probability</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="453"/>
+        <source>Setup the analysis parameters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="511"/>
+        <source>Update</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="511"/>
+        <source>Version %s is available</source>
+        <translation>新版本 %s</translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="502"/>
+        <source>No update available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="504"/>
+        <source>Internet connect error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="538"/>
+        <source>Cancel anslysis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="763"/>
+        <source>No result</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="574"/>
+        <source>Saved to %s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="577"/>
+        <source>Save success</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="595"/>
+        <source>No voltage channel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="611"/>
+        <source>Select the time range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="619"/>
+        <source>No opened file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="626"/>
+        <source>Resampling need set time range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="630"/>
+        <source>Please setup the threshold</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="638"/>
+        <source>Time range set is wrong</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="652"/>
+        <source>Runing...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="686"/>
+        <source>Errorsï¼please checkup the setup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="687"/>
+        <source>Run extract failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="673"/>
+        <source>Analysis success</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="714"/>
+        <source>Plot the fitted signal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="738"/>
+        <source>Plot the scatering</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="794"/>
+        <source>No ÎI result</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="766"/>
+        <source>Plot the Histogram</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="791"/>
+        <source>No charge result</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="800"/>
+        <source>Plotting histogram...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="814"/>
+        <source>Open file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="816"/>
+        <source>No file selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="819"/>
+        <source>Reading ABF..</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="826"/>
+        <source>ABF load success..</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="849"/>
+        <source>Load success</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="855"/>
+        <source>File load failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="834"/>
+        <source>File load errorï¼Abf version should &gt; 2.0 </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="848"/>
+        <source>Load Xdat success..</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="856"/>
+        <source>Fail load failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="1023"/>
+        <source>No file loaded</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="1024"/>
+        <source>No filed loaded</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="880"/>
+        <source>View the data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="932"/>
+        <source>End of the data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="966"/>
+        <source>Time range setup wrong</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="964"/>
+        <source>reach the origin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="1027"/>
+        <source>No Sweep...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="983"/>
+        <source>Plot Sweep data: sweep %d</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="PyNano.py" line="1049"/>
+        <source>Plot sweep data : sweep %d</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -219,7 +506,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;PyNano is a brief and powerful nano science data analysis software. &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="ui/about.py" line="163"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Current version：&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
@@ -245,7 +532,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="ui/main_ui.py" line="1394"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;end&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;终止点&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="ui/main_ui.py" line="1395"/>
@@ -295,7 +582,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="ui/main_ui.py" line="1404"/>
         <source>Open Abf file</source>
-        <translation type="unfinished"></translation>
+        <translation>打开ABF文件</translation>
     </message>
     <message>
         <location filename="ui/main_ui.py" line="1405"/>
@@ -412,7 +699,7 @@ p, li { white-space: pre-wrap; }
         <source>I/I0</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="ui/main_ui.py" line="1437"/>
         <source>△I</source>
         <translation type="unfinished"></translation>

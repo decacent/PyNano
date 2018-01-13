@@ -27,7 +27,7 @@ from tool.tool import Analy_tool
 from ui.main_ui import *
 from ui.input_par import Ui_Dialog
 from ui.about import Ui_about
-
+from ui.languist import Ui_languist
 
 mpl.rcParams['agg.path.chunksize'] = 10000
 
@@ -110,15 +110,16 @@ def fuck():
         b = ''
         return True, False, b
 
-
+#global langues
 class Scat_analy(QMainWindow, Ui_mainWindow):
-    def __init__(self, parent=None):
+    def __init__(self, langues, parent=None):
         super(Scat_analy, self).__init__(parent)
         self.setupUi(self)
-        _translate = QtCore.QCoreApplication.translate
+        #_translate = QtCore.QCoreApplication.translate
         self.toolWindow = Analy_tool()
         self.verticalLayout_11.addWidget(self.toolWindow)
         self.version = 2.0
+        self.language=langues
         self.comboBox.setCurrentIndex(2)
         # 初始化信号提取部分变量
         self.fn = ''  # abf文件路径
@@ -253,6 +254,27 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         self.spinBox_6.editingFinished.connect(self.plot_Scattering)
         self.comboBox_3.currentIndexChanged['int'].connect(self.plot_Scattering)
 
+
+    def closeEvent(self, event):
+        reply = QtWidgets.QMessageBox.question(self, self.tr('Warning'), self.tr('Please save result,\nExit really?'),
+                                           QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No)
+        if reply == QtWidgets.QMessageBox.Yes:
+            self.set_writeini()
+            event.accept()
+        else:
+            event.ignore()
+
+    def set_writeini(self):
+        pass
+        setting=QtCore.QSettings('a.ini',QtCore.QSettings.IniFormat)
+        setting.beginGroup('window')
+        setting.setIniCodec('UTF-8')
+        s1=setting.setValue('model',self.comboBox.currentIndex())
+        setting.setValue('language', self.language)
+        setting.setValue('window_size',self.geometry())
+        setting.endGroup()
+        return True
+
     def all_hist(self):
         if not self.is_read:
             return None
@@ -350,11 +372,11 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
 
     def markov_analy(self):
         if self.is_extracted is False or not self.markov_ready:
-            self.statusBar().showMessage(self.tr("无分析结果"))
-            QMessageBox.information(self, "标题", "无分析结果", QMessageBox.Ok)
+            self.statusBar().showMessage(self.tr("No markov analysis result"))
+            QMessageBox.information(self, self.tr("Warning"), self.tr("No markov analysis result"), QMessageBox.Ok)
         elif self.markov_stage == []:
-            self.statusBar().showMessage("无分析结果")
-            QMessageBox.information(self, "标题", "请设置Markov台阶", QMessageBox.Ok)
+            self.statusBar().showMessage(self.tr("No markov analysis result"))
+            QMessageBox.information(self, self.tr("Notice"), self.tr("Please setup Markov Chain stage"), QMessageBox.Ok)
 
         else:
             self.markov_level = len(self.markov_stage) + 1
@@ -367,17 +389,17 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                 self.hist_refresh()
                 self.is_markov = True
                 self.plottable()
-                self.statusBar().showMessage('Markov chain 分析')
+                self.statusBar().showMessage(self.tr('Markov chain analysis'))
             except:
-                QMessageBox.information(self, "标题", "计算错误，请正确设置参数", QMessageBox.Ok)
+                QMessageBox.information(self, self.tr("Errors"), self.tr("Please setup the right parameters"), QMessageBox.Ok)
 
     def markov_save(self):
         if not self.is_markov:
-            self.statusBar().showMessage('无计算结果')
-            QMessageBox.information(self, "标题", "无Markov计算结果", QMessageBox.Ok)
+            self.statusBar().showMessage(self.tr("No markov analysis result"))
+            QMessageBox.information(self, self.tr("Warning"), self.tr("No markov analysis result"), QMessageBox.Ok)
             return None
         file_choices = "mat (*.mat)"
-        path = QFileDialog.getSaveFileName(self, 'Save file', '', file_choices)
+        path = QFileDialog.getSaveFileName(self, self.tr('Save Result'), '', file_choices)
         if path[0] is not '':
             if path[1] == 'mat (*.mat)':
                 self.markov_data['Current'] = self.extracted_signal[:, 0]
@@ -401,20 +423,21 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                 self.figure1.savefig(path[0].split('.')[0] + '_data.jpg', dpi=150)
                 self.figure2.savefig(path[0].split('.')[0] + '_scatter.tif', dpi=150)
                 self.figure3.savefig(path[0].split('.')[0] + '_hist.tif', dpi=150)
-                self.statusBar().showMessage('数据保存完成 Saved to %s' % path[0])
-                QMessageBox.information(self, "标题", "数据保存成功", QMessageBox.Ok)
+                self.statusBar().showMessage(self.tr('Saved to')+ '%s' % path[0])
+                QMessageBox.information(self, self.tr("Notice"), self.tr("Save Success"), QMessageBox.Ok)
             else:
-                QMessageBox.information(self, "标题", "请选择 .mat 格式保存数据", QMessageBox.Ok)
+                QMessageBox.information(self, self.tr("Alert"), self.tr("please save to .mat  format"), QMessageBox.Ok)
 
 
         else:
-            self.statusBar().showMessage('数据保存失败')
+            self.statusBar().showMessage(self.tr("Save failed"))
+            QMessageBox.information(self, self.tr("Alert"), self.tr("Save Success"), QMessageBox.Ok)
             pass
 
     def plottable(self):
 
         if self.is_markov:
-            self.statusBar().showMessage('Markov chain 转移概率')
+            self.statusBar().showMessage(self.tr('Markov chain transfer probability'))
             self.ax4.cla()
             a = ['stage' + str(x + 1) for x in range(self.markov_level)]
             the_table = self.ax4.table(cellText=np.round(self.markov_data['probability'], 3), cellLoc='center',
@@ -428,11 +451,18 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
             self.canvas4.draw()
 
     def child(self):
-        self.statusBar().showMessage('分析参数设置')
+        self.statusBar().showMessage(self.tr('Setup the analysis parameters'))
         self.is_set = False
         self.input_dialog = Ui_Dialog()
         self.Dialog_p = QDialog(self)
         self.input_dialog.setupUi(self.Dialog_p)
+        if self.comboBox.currentIndex() != 1:
+            self.input_dialog.label_3.hide()
+            self.input_dialog.label_4.hide()
+            self.input_dialog.label_5.hide()
+            self.input_dialog.doubleSpinBox_endth.hide()
+            self.input_dialog.spinBox_basenum.hide()
+            self.input_dialog.spinBox_endnum.hide()
         try:
             self.input_dialog.doubleSpinBox_th.setValue(self.th)
             self.input_dialog.doubleSpinBox_base.setValue(self.peak_th)
@@ -467,19 +497,20 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
             r = get('https://decacent.github.io/data/data.json')
             new_version = r.json()['Version']
             if self.version < new_version:
-                QMessageBox.information(self, "检查更新", "Version %s is available" % new_version, QMessageBox.Ok)
+                QMessageBox.information(self, self.tr("Update"), self.tr("Version %s is available" % new_version), QMessageBox.Ok)
                 QtGui.QDesktopServices.openUrl(QtCore.QUrl('https://sourceforge.net/projects/pynano/'))
             else:
-                QMessageBox.information(self, "检查更新", "No update available", QMessageBox.Ok)
+                QMessageBox.information(self, self.tr("Update"), self.tr("No update available"), QMessageBox.Ok)
         except:
-            QMessageBox.information(self, "检查更新", "Internet connect error", QMessageBox.Ok)
+            QMessageBox.information(self, self.tr("Update"), self.tr("Internet connect error"), QMessageBox.Ok)
 
     def init_update(self):
         try:
             r = get('https://decacent.github.io/data/data.json')
             new_version = r.json()['Version']
             if self.version < new_version:
-                QMessageBox.information(self, "检查更新", "Version %s is available" % new_version, QMessageBox.Ok)
+                QMessageBox.information(self, self.tr("Update"), self.tr("Version %s is available" % new_version),
+                                        QMessageBox.Ok)
                 QtGui.QDesktopServices.openUrl(QtCore.QUrl('https://sourceforge.net/projects/pynano/'))
             else:
                 pass
@@ -488,7 +519,6 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
             pass
 
     def about_close(self):
-        self.statusBar().showMessage('取消信号提取')
         self.Dialog_d.close()
 
     def get_param(self):
@@ -506,6 +536,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
 
     def APPclose(self):
         self.is_set = False
+        self.statusBar().showMessage(self.tr('Cancel anslysis'))
         self.Dialog_p.close()
 
     def figure_init(self):
@@ -515,11 +546,11 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
     def save_result(self):
         # 保存信号提取结果
         if self.extracted_signal is None:
-            self.statusBar().showMessage('无计算结果')
-            QMessageBox.information(self, "标题", "无计算结果", QMessageBox.Ok)
+            self.statusBar().showMessage(self.tr('No result'))
+            QMessageBox.information(self, self.tr("Warning"), self.tr("No result"), QMessageBox.Ok)
             return None
         file_choices = "CSV (*.csv);;mat (*.mat)"
-        path = QFileDialog.getSaveFileName(self, 'Save file', '', file_choices)
+        path = QFileDialog.getSaveFileName(self, self.tr('Save Result'), '', file_choices)
         head3 = 'Current,Time,I/I0'
         head6 = 'Current,Time,I/I0,Baseline,Delta I,Charge'
         head7 = 'Current,Time,I/I0,Baseline,Delta I,Charge,Initial time'
@@ -538,15 +569,16 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                 mat_dict = {}
                 for i in range(head_index):
                     mat_dict[head[i]] = self.extracted_signal[:, i]
-                self.statusBar().showMessage('Saved to %s' % path[0])
+                self.statusBar().showMessage(self.tr('Saved to %s' % path[0]))
                 sio.savemat(path[0], mat_dict)
             elif path[1] == 'CSV (*.csv)':
-                self.statusBar().showMessage('Saved to %s' % path[0])
+                self.statusBar().showMessage(self.tr('Saved to %s' % path[0]))
                 np.savetxt(path[0], self.extracted_signal, delimiter=',', header=head_row1)
-            self.statusBar().showMessage('数据保存完成')
-            QMessageBox.information(self, "标题", "保存完成", QMessageBox.Ok)
+            self.statusBar().showMessage(self.tr('Save success'))
+            QMessageBox.information(self, self.tr("Notice"), self.tr("Save success"), QMessageBox.Ok)
         else:
-            self.statusBar().showMessage('数据保存失败')
+            QMessageBox.information(self, self.tr("Alert"), self.tr("Save failed"), QMessageBox.Ok)
+            self.statusBar().showMessage(self.tr('Save failed'))
             pass
 
     def save_fig(self):
@@ -561,7 +593,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                 pass
             else:
                 if self.channel == 0 or self.channel == 1:
-                    self.label_8.setText('无电压数据')
+                    self.label_8.setText(self.tr('No voltage channel'))
 
                 else:
                     t2 = event.xdata * self.sam
@@ -577,26 +609,26 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
             self.star_point = int(self.doubleSpinBox.value() * self.sam)
             self.end_point = int(self.doubleSpinBox_2.value() * self.sam)
             self.is_part = True
-            self.statusBar().showMessage('设置信号提取范围')
+            self.statusBar().showMessage(self.tr('Select the time range'))
         else:
             pass
 
     def extract(self):
         # 提取信号
         if self.fn == '' and self.data is None:
-            self.statusBar().showMessage("未读取数据")
-            QMessageBox.information(self, "标题", "未读取数据", QMessageBox.Ok)
+            self.statusBar().showMessage(self.tr("No opened file"))
+            QMessageBox.information(self, self.tr("Warning"), self.tr("No opened file"), QMessageBox.Ok)
             pass
         else:
             self.child()
             if not self.is_set:
                 return None
-            if (self.comboBox.currentIndex() == 2 or self.comboBox.currentIndex() == 3) and not self.checkBox.isChecked() and self.is_resam:
-                QMessageBox.information(self, "标题", "重采样请设置时间范围", QMessageBox.Ok)
+            if (self.comboBox.currentIndex() == 0 or self.comboBox.currentIndex() == 2) and not self.checkBox.isChecked() and self.is_resam:
+                QMessageBox.information(self, self.tr("Warning"), self.tr("Resampling need set time range"), QMessageBox.Ok)
                 return None
 
             if self.th == 0 or not self.is_set:
-                QMessageBox.information(self, "标题", "请设置电流阈值", QMessageBox.Ok)
+                QMessageBox.information(self, self.tr("Warning"), self.tr("Please setup the threshold"), QMessageBox.Ok)
                 pass
             else:
                 if self.checkBox.isChecked():  # 设置信号提取区域
@@ -604,7 +636,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                     self.star_point = int(self.doubleSpinBox.value() * self.sam)
                     self.end_point = int(self.doubleSpinBox_2.value() * self.sam)
                     if self.end_point <= self.star_point:
-                        QMessageBox.information(self, "标题", "请正确设置时间范围", QMessageBox.Ok)
+                        QMessageBox.information(self, self.tr("Warning"), self.tr("Time range set is wrong"), QMessageBox.Ok)
                         return None
                     else:
                         if self.channel != 0:
@@ -618,7 +650,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                     else:
                         self.analysis_data = self.data[self.sweep][:]
                 try:
-                    self.statusBar().showMessage("信号提取中...")
+                    self.statusBar().showMessage(self.tr("Runing..."))
                     self.extract1 = Extract_1(data=self.analysis_data, model=self.comboBox.currentIndex(),
                                               peak_th=self.peak_th,
                                               base=self.baseline, endth=self.endth, base_num=self.base_num,
@@ -629,8 +661,8 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                     self.extract1.trigger.connect(self.extract1_end)
                     self.extract1.start()
                 except:
-                    QMessageBox.information(self, "标题", "运行错误，请正确设置参数", QMessageBox.Ok)
-                    self.statusBar().showMessage("信号提取失败")
+                    QMessageBox.information(self, self.tr("Alert"), self.tr("Errors，please checkup the setup"), QMessageBox.Ok)
+                    self.statusBar().showMessage(self.tr("Run extract failed"))
 
     def extract1_end(self, ls):
         if ls[2]:
@@ -638,8 +670,8 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
             self.fit_data = ls[1]
             self.is_extracted = True
             self.widget.setEnabled(True)
-            QMessageBox.information(self, "标题", "信号提取完成", QMessageBox.Ok)
-            self.statusBar().showMessage("信号提取完成")
+            QMessageBox.information(self, self.tr("Notice"), self.tr("Analysis success"), QMessageBox.Ok)
+            self.statusBar().showMessage(self.tr("Analysis success"))
             self.label_10.setText(str(len(self.extracted_signal)))
             self.label_10.setAlignment(QtCore.Qt.AlignCenter)
             if len(self.extracted_signal) > 0:
@@ -652,20 +684,20 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                 self.widget_4.hide()
         else:
             self.widget.setEnabled(True)
-            QMessageBox.information(self, "error", "运行错误，请正确设置参数", QMessageBox.Ok)
-            self.statusBar().showMessage("信号提取失败")
+            QMessageBox.information(self, self.tr("Alert"), self.tr("Errors，please checkup the setup"), QMessageBox.Ok)
+            self.statusBar().showMessage(self.tr("Run extract failed"))
 
     def viewsignal(self):
         # 预览拟合结果
         if self.is_extracted is False:
-            self.statusBar().showMessage("无分析结果")
-            QMessageBox.information(self, "标题", "无分析结果", QMessageBox.Ok)
+            self.statusBar().showMessage(self.tr("No result"))
+            QMessageBox.information(self, self.tr("Warning"), self.tr("No result"), QMessageBox.Ok)
             pass
         else:
             if self.is_part:  # 设置信号提取区域
 
 
-                self.statusBar().showMessage('绘制拟合信号')
+                self.statusBar().showMessage(self.tr('Plot the fitted signal'))
                 self.figure_init()
 
                 if self.channel != 0:
@@ -680,6 +712,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                 self.ax1.set_ylabel('Current/pA')
                 self.canvas1.draw()
             else:
+                self.statusBar().showMessage(self.tr('Plot the fitted signal'))
                 self.figure_init()
                 if self.channel != 0:
                     self.ax1.plot(self.time, self.data[self.sweep][:, 0], ':')
@@ -698,12 +731,12 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         # 绘制散点图
 
         if self.is_extracted is False:
-            self.statusBar().showMessage("无分析结果")
-            QMessageBox.information(self, "标题", "无分析结果", QMessageBox.Ok)
+            self.statusBar().showMessage(self.tr("No result"))
+            QMessageBox.information(self, self.tr("Warning"), self.tr("No result"), QMessageBox.Ok)
             pass
         else:
             self.ax2.cla()
-            self.statusBar().showMessage('绘制散点图')
+            self.statusBar().showMessage(self.tr('Plot the scatering'))
             if self.comboBox_3.currentIndex() == 0:
                 la = 0
             elif self.comboBox_3.currentIndex() == 1:
@@ -712,7 +745,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                 la = 4
             if self.comboBox.currentIndex() == 0 and la == 4:
                 la = 0
-                QMessageBox.information(self, "标题", "无ΔI结果", QMessageBox.Ok)
+                QMessageBox.information(self, self.tr("Warning"), self.tr("No ΔI result"), QMessageBox.Ok)
             self.ax2.scatter(self.extracted_signal[:, la], self.extracted_signal[:, 1], marker='o', color='b',
                              s=self.spinBox_6.value())
             self.ax2.set_ylabel('Time/ms')
@@ -727,11 +760,11 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
     def plot_currentHist(self):
         # 绘制电流Hist
         if self.is_extracted is False:
-            self.statusBar().showMessage("无分析结果")
-            QMessageBox.information(self, "标题", "无分析结果", QMessageBox.Ok)
+            self.statusBar().showMessage(self.tr("No result"))
+            QMessageBox.information(self, self.tr("Warning"), self.tr("No result"), QMessageBox.Ok)
             pass
         else:
-            self.statusBar().showMessage('绘制散点图')
+            self.statusBar().showMessage(self.tr('Plot the Histogram'))
             if self.comboBox_2.currentIndex() == 0:
                 la = 0
                 text = 'I/pA'
@@ -756,16 +789,16 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
             s2 = self.double_SpinBox_4.value()
 
             if self.comboBox.currentIndex() == 0 and la == 5:
-                QMessageBox.information(self, "标题", "无积分电荷结果", QMessageBox.Ok)
+                QMessageBox.information(self, self.tr("Warning"), self.tr("No charge result"), QMessageBox.Ok)
                 pass
             elif self.comboBox.currentIndex() == 0 and la == 4:
-                QMessageBox.information(self, "标题", "无ΔI结果", QMessageBox.Ok)
+                QMessageBox.information(self,  self.tr("Warning"), self.tr("No ΔI result"), QMessageBox.Ok)
             else:
                 if s2 <= s1:
                     s1 = min(self.extracted_signal[:, la])
                     s2 = max(self.extracted_signal[:, la])
                 self.ax3.cla()
-                self.statusBar().showMessage('绘制Hist...')
+                self.statusBar().showMessage(self.tr('Plotting histogram...'))
                 self.ax3.hist(self.extracted_signal[:, la], bins=self.spinBox_5.value(), normed=0, range=(s1, s2))
                 self.ax3.set_yticklabels(np.round(self.ax3.get_yticks() / len(self.extracted_signal[:, la]), 2))
                 self.ax3.set_ylabel('Probability')
@@ -778,28 +811,28 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
 
     def loadabf(self):
         # 载入ABF文件
-        self.statusBar().showMessage("打开ABF文件")
-        self.fn = QFileDialog.getOpenFileName(filter='Abf Files (*.abf);;Xdat Files (*.xdat)')
+        self.statusBar().showMessage(self.tr("Open file"))
+        self.fn = QFileDialog.getOpenFileName(self,self.tr("Open file"), filter='Abf Files (*.abf);;Xdat Files (*.xdat)')
         if self.fn[0] == '':
-            self.statusBar().showMessage("未选择文件")
+            self.statusBar().showMessage(self.tr("No file selected"))
             pass
         elif self.fn[1] == 'Abf Files (*.abf)':
-            self.statusBar().showMessage("正在读取ABF数据..")
+            self.statusBar().showMessage(self.tr("Reading ABF.."))
             try:
                 f = Abf_io(self.fn[0])
                 self.data, self.sam, self.sweeps = f.read_abf()
                 self.time = np.arange(0, len(self.data[0]) / self.sam, 1 / self.sam)
                 self.time = self.time[0:len(self.data[0])]
                 self.is_read = True
-                self.statusBar().showMessage('ABF数据读取完成..' + os.path.basename(self.fn[0]))
-                QMessageBox.information(self, "标题", "数据读取完成", QMessageBox.Ok)
+                self.statusBar().showMessage(self.tr('ABF load success..') + os.path.basename(self.fn[0]))
+                QMessageBox.information(self, self.tr("Notice"), self.tr("Load success"), QMessageBox.Ok)
                 self.label_6.setText('1/%d' % (self.sweeps))
                 self.label_6.setAlignment(QtCore.Qt.AlignCenter)
                 self.label_sample_rate.setText('%dk' % (self.sam / 1000))
                 self.label_sample_rate.setAlignment(QtCore.Qt.AlignCenter)
             except:
-                self.statusBar().showMessage('文件读取错误')
-                QMessageBox.information(self, "标题", "文件错误，Abf版本<2.0 ", QMessageBox.Ok)
+                self.statusBar().showMessage(self.tr('File load failed'))
+                QMessageBox.information(self, self.tr("Alert"), self.tr("File load error，Abf version should > 2.0 "), QMessageBox.Ok)
 
             try:
                 self.channel = self.data[0].shape[1]
@@ -813,25 +846,25 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                 self.time = self.time[0:len(self.data[0])]
                 self.channel = 2
                 self.is_read = True
-                self.statusBar().showMessage('Xdat数据读取完成..' + os.path.basename(self.fn[0]))
-                QMessageBox.information(self, "标题", "数据读取完成", QMessageBox.Ok)
+                self.statusBar().showMessage(self.tr('Load Xdat success..') + os.path.basename(self.fn[0]))
+                QMessageBox.information(self, self.tr("Notice"), self.tr("Load success"), QMessageBox.Ok)
                 self.label_6.setText('1/%d' % (self.sweeps))
                 self.label_6.setAlignment(QtCore.Qt.AlignCenter)
                 self.label_sample_rate.setText('%dk' % (self.sam / 1000))
                 self.label_sample_rate.setAlignment(QtCore.Qt.AlignCenter)
             except:
-                self.statusBar().showMessage('文件读取错误')
-                QMessageBox.information(self, "标题", "文件错误 ", QMessageBox.Ok)
+                self.statusBar().showMessage(self.tr('File load failed'))
+                QMessageBox.information(self, self.tr("Alert"), self.tr("Fail load failed"), QMessageBox.Ok)
 
     def viewdata(self):
-        if self.fn == '' and not self.is_read:
-            self.statusBar().showMessage('文件未读取')
-            QMessageBox.information(self, "标题", "文件未读取", QMessageBox.Ok)
+        if self.fn[0] == '' and not self.is_read:
+            self.statusBar().showMessage(self.tr('No file loaded'))
+            QMessageBox.information(self, self.tr("Warning"), self.tr("No filed loaded"), QMessageBox.Ok)
             pass
         else:
             if self.sweeps == 0 or self.sweeps > 22:
                 self.sweep = 0
-                self.statusBar().showMessage('数据预览')
+                self.statusBar().showMessage(self.tr('View the data'))
                 self.figure_init()
                 self.time = np.arange(0, len(self.data[0]) / self.sam, 1 / self.sam)
                 self.time = self.time[0:len(self.data[0])]
@@ -845,6 +878,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
 
             else:
                 self.sweep = 0
+                self.statusBar().showMessage(self.tr('View the data'))
                 self.figure_init()
                 if self.channel != 0:
                     for i in range(self.sweeps):
@@ -869,8 +903,8 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
     def next_view(self):
         # 部分预览数据
         if self.fn == '' and not self.is_read:
-            self.statusBar().showMessage('文件未读取')
-            QMessageBox.information(self, "标题", "文件未读取", QMessageBox.Ok)
+            self.statusBar().showMessage(self.tr('No file loaded'))
+            QMessageBox.information(self, self.tr("Warning"), self.tr("No filed loaded"), QMessageBox.Ok)
             pass
         else:  # self.is_view or (not self.is_view_signal):
             if self.gaptime > 0 and self.gap_initime < self.time[-1]:
@@ -896,15 +930,15 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
 
                 if is_end:
                     # self.statusBar().showMessage('到达数据末尾')
-                    QMessageBox.information(self, "标题", "数据末尾", QMessageBox.Ok)
+                    QMessageBox.information(self, self.tr("Warning"), self.tr("End of the data"), QMessageBox.Ok)
             else:
-                QMessageBox.information(self, "标题", "时间设置错误或到达数据末尾/n请正确设置时间", QMessageBox.Ok)
+                QMessageBox.information(self, self.tr("Notice"), self.tr("Time range setup wrong"), QMessageBox.Ok)
 
     def previous_view(self):
         # 部分预览数据
         if self.fn == '' and not self.is_read:
-            self.statusBar().showMessage('文件未读取')
-            QMessageBox.information(self, "标题", "文件未读取", QMessageBox.Ok)
+            self.statusBar().showMessage(self.tr('No file loaded'))
+            QMessageBox.information(self, self.tr("Warning"), self.tr("No filed loaded"), QMessageBox.Ok)
             pass
         else:  # self.is_view or (not self.is_view_signal):
             if self.gaptime > 0 and self.gap_initime > 0:
@@ -928,9 +962,9 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                 self.is_view = False
                 self.is_view_signal = False
                 if is_end:
-                    QMessageBox.information(self, "标题", "数据起始", QMessageBox.Ok)
+                    QMessageBox.information(self, self.tr("Notice"), self.tr("reach the origin"), QMessageBox.Ok)
             else:
-                QMessageBox.information(self, "标题", "时间设置错误或到达数据起始/n请正确设置时间", QMessageBox.Ok)
+                QMessageBox.information(self, self.tr("Notice"), self.tr("Time range setup wrong"), QMessageBox.Ok)
 
     def gap_refresh(self):
         self.gap_initime = self.spinBox_2.value()
@@ -939,14 +973,15 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
     def sweep_plot_next(self):
         self.sweep += 1
         if self.fn == '' and not self.is_read:
-            self.statusBar().showMessage('文件未读取')
+            self.statusBar().showMessage(self.tr('No file loaded'))
+            QMessageBox.information(self, self.tr("Warning"), self.tr("No filed loaded"), QMessageBox.Ok)
             pass
         elif self.sweeps == 0:
-            self.statusBar().showMessage('无Sweep数据...')
+            self.statusBar().showMessage(self.tr('No Sweep...'))
             pass
         elif self.sweep < self.sweeps:
 
-            self.statusBar().showMessage('绘制Sweep数据 sweep %d' % (self.sweep + 1))
+            self.statusBar().showMessage(self.tr('Plot Sweep data: sweep %d' % (self.sweep + 1)))
             self.figure_init()
             self.time = np.arange(0, len(self.data[self.sweep]) / self.sam, 1 / self.sam)
             self.time = self.time[0:len(self.data[self.sweep])]
@@ -966,7 +1001,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
             self.is_view_signal = False
         else:
             self.sweep = 0
-            self.statusBar().showMessage('绘制Sweep数据 sweep %d' % (self.sweep + 1))
+            self.statusBar().showMessage(self.tr('Plot sweep data : sweep %d' % (self.sweep + 1)))
             self.figure_init()
             self.time = np.arange(0, len(self.data[self.sweep][:, 0]) / self.sam, 1 / self.sam)
             self.time = self.time[0:len(self.data[self.sweep])]
@@ -986,13 +1021,14 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
     def sweep_plot_previous(self):
         self.sweep -= 1
         if self.fn == '' and not self.is_read:
-            self.statusBar().showMessage('文件未读取')
+            self.statusBar().showMessage(self.tr('No file loaded'))
+            QMessageBox.information(self, self.tr("Warning"), self.tr("No filed loaded"), QMessageBox.Ok)
             pass
         elif self.sweeps == 0:
-            self.statusBar().showMessage('无Sweep数据...')
+            self.statusBar().showMessage(self.tr('No Sweep...'))
             pass
         elif self.sweep >= 0:
-            self.statusBar().showMessage('绘制Sweep数据 sweep %d' % (self.sweep + 1))
+            self.statusBar().showMessage(self.tr('Plot sweep data : sweep %d' % (self.sweep + 1)))
             self.figure_init()
             self.time = np.arange(0, len(self.data[self.sweep]) / self.sam, 1 / self.sam)
             self.time = self.time[0:len(self.data[self.sweep])]
@@ -1011,7 +1047,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
             self.is_view_signal = False
         else:
             self.sweep = self.sweeps - 1
-            self.statusBar().showMessage('绘制Sweep数据 sweep %d' % (self.sweep + 1))
+            self.statusBar().showMessage(self.tr('Plot sweep data : sweep %d' % (self.sweep + 1)))
             self.figure_init()
             self.time = np.arange(0, len(self.data[self.sweep]) / self.sam, 1 / self.sam)
             self.time = self.time[0:len(self.data[self.sweep])]
@@ -1050,16 +1086,47 @@ class MovieSplashScreen(QSplashScreen):
         self.setMask(pixmap.mask())
 
 
+
 if __name__ == '__main__':
     '''
     主函数
     '''
+
+    #Dialog_d.exec_()
+    global langues
     app = QApplication(sys.argv)
+
+    if os.path.exists('a.ini'):
+        settings1 = QtCore.QSettings(r'a.ini', QtCore.QSettings.IniFormat)
+        settings1.beginGroup('window')
+        settings1.setIniCodec('UTF-8')
+        langues = settings1.value(r'language')
+        #if s1=='zh_CN':
+        #chinese = (s1=='zh_CN')
+        print(langues)
+
+    else:
+
+        language=Ui_languist()
+        Dialog_d = QDialog()
+        language.setupUi(Dialog_d)
+        #chinese=language.pushButton.clicked.connect(language.click)
+        language.pushButton.clicked.connect(language.click)
+        print(chinese)
+        Dialog_d.exec_()
+        if chinese:
+            langues = "zh_CN"
+        else:
+            langues = "English"
+    if langues=="zh_CN" :
+        trans = QtCore.QTranslator()
+        trans.load("zh_CN")
+        app.installTranslator(trans)
     movie = QMovie(":/img/1.gif")
     splash = MovieSplashScreen(movie)
     splash.show()
     start = time.time()
-    mainWindow = Scat_analy()
+    mainWindow = Scat_analy(langues=langues)
     while movie.state() == QMovie.Running and time.time() < start + 3:
         app.processEvents()
 
