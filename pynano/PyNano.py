@@ -27,7 +27,7 @@ from tool.tool import Analy_tool
 from ui.main_ui import *
 from ui.input_par import Ui_Dialog
 from ui.about import Ui_about
-from ui.languist import Ui_languist
+#from ui.languist import Ui_languist
 
 mpl.rcParams['agg.path.chunksize'] = 10000
 
@@ -110,7 +110,6 @@ def fuck():
         b = ''
         return True, False, b
 
-#global langues
 class Scat_analy(QMainWindow, Ui_mainWindow):
     def __init__(self, langues, parent=None):
         super(Scat_analy, self).__init__(parent)
@@ -1091,9 +1090,6 @@ if __name__ == '__main__':
     '''
     主函数
     '''
-
-    #Dialog_d.exec_()
-    global langues
     app = QApplication(sys.argv)
 
     if os.path.exists('a.ini'):
@@ -1106,18 +1102,7 @@ if __name__ == '__main__':
         print(langues)
 
     else:
-
-        language=Ui_languist()
-        Dialog_d = QDialog()
-        language.setupUi(Dialog_d)
-        #chinese=language.pushButton.clicked.connect(language.click)
-        language.pushButton.clicked.connect(language.click)
-        print(chinese)
-        Dialog_d.exec_()
-        if chinese:
-            langues = "zh_CN"
-        else:
-            langues = "English"
+        langues = "English"
     if langues=="zh_CN" :
         trans = QtCore.QTranslator()
         trans.load("zh_CN")

@@ -65,30 +65,30 @@ class Tdms_read(QMainWindow, Ui_Read_Tdms):
             self.plottdms()
 
     def loadtdms(self):
-        self.statusBar().showMessage("打开tdms文件")
-        self.tdms_fn = QFileDialog.getOpenFileName(filter='TDMS Files (*.tdms)')[0]
+        self.statusBar().showMessage(self.tr("Open Tdms file"))
+        self.tdms_fn = QFileDialog.getOpenFileName(self,self.tr("Open Tdms file"),filter='TDMS Files (*.tdms)')[0]
         if self.tdms_fn == '':
-            self.statusBar().showMessage("未选择文件")
+            self.statusBar().showMessage(self.tr("No file selected"))
             pass
         else:
-            self.statusBar().showMessage("正在读取Tdms数据..")
+            self.statusBar().showMessage(self.tr("Tdms reading ..."))
             self.tdms_data,self.tdms_sam=read_tdms(self.tdms_fn)
-            self.statusBar().showMessage('Tdms数据读取完成..' + os.path.basename(self.tdms_fn))
+            self.statusBar().showMessage(self.tr('Tdms load success..')+ os.path.basename(self.tdms_fn))
             self.plottdms()
-            QMessageBox.information(self, "标题", "数据读取完成", QMessageBox.Ok)
+            QMessageBox.information(self, self.tr("Notice"), self.tr("Tdms load success"), QMessageBox.Ok)
 
 
 
     def plottdms(self):
         if self.tdms_data is None:
-            self.statusBar().showMessage('无Tdms数据')
-            QMessageBox.information(self, "标题", "无Tdms数据", QMessageBox.Ok)
+            self.statusBar().showMessage(self.tr('No file loaded'))
+            QMessageBox.information(self, self.tr("Notice"), self.tr("No file loaded"), QMessageBox.Ok)
         else:
             if self.checkBox_5_tdms.isChecked():
                 self.start = self.spinBox_8_tdms.value() * self.tdms_sam
                 self.end = self.spinBox_9_tdms.value() * self.tdms_sam
                 if self.start >= self.end:
-                    QMessageBox.information(self, "标题", "请正确设置时间范围", QMessageBox.Ok)
+                    QMessageBox.information(self, self.tr("Warning"), self.tr("Time range seting wrong"), QMessageBox.Ok)
                     pass
                 else:
                     self.ax_tdms.cla()
@@ -101,7 +101,7 @@ class Tdms_read(QMainWindow, Ui_Read_Tdms):
                     self.axs_tdms.plot(self.tdms_data[0, self.start:self.end], self.tdms_data[2, self.start:self.end], 'r')
                     self.axs_tdms.set_ylabel('Voltage/V')
                     self.canvas_tdms.draw()
-                    self.statusBar().showMessage('绘制TDMS')
+                    self.statusBar().showMessage(self.tr('Ploting Tdms ...'))
                     self.tdms_is_view = True
             else:
                 self.ax_tdms.cla()
@@ -112,48 +112,49 @@ class Tdms_read(QMainWindow, Ui_Read_Tdms):
                 self.axs_tdms.plot(self.tdms_data[0, :], self.tdms_data[2, :], 'r')
                 self.axs_tdms.set_ylabel('Voltage/V')
                 self.canvas_tdms.draw()
-                self.statusBar().showMessage('绘制TDMS')
+                self.statusBar().showMessage(self.tr('Ploting Tdms'))
                 self.tdms_is_view=True
 
     def savetdms(self):
         if self.tdms_data is None:
-            self.statusBar().showMessage('无Tdms数据')
-            QMessageBox.information(self, "标题", "无Tdms数据", QMessageBox.Ok)
+            self.statusBar().showMessage(self.tr('No file loaded'))
+            QMessageBox.information(self, self.tr("Warning"), self.tr("No file loaded"), QMessageBox.Ok)
             return None
         file_choices = "mat (*.mat);;CSV (*.csv)"
-        path = QFileDialog.getSaveFileName(self, 'Save file', '', file_choices)
+        path = QFileDialog.getSaveFileName(self, self.tr('Save file'), '', file_choices)
         if path:
             if self.checkBox_5_tdms.isChecked():
                 self.start = self.spinBox_8_tdms.value() * self.tdms_sam
                 self.end = self.spinBox_9_tdms.value() * self.tdms_sam
                 if self.start >= self.end:
-                    QMessageBox.information(self, "标题", "请正确设置时间范围", QMessageBox.Ok)
+                    QMessageBox.information(self, self.tr("Warning"), self.tr("Time range seting wrong"), QMessageBox.Ok)
                     return  None
                 else:
                     self.part_tdms=self.tdms_data[:,self.start:self.end]
                     if path[1] == 'mat (*.mat)':
                         sio.savemat(path[0], {'f': self.part_tdms.T})
                         self.statusBar().showMessage('Saved to %s' % path[0])
-                        self.statusBar().showMessage('数据保存完成')
-                        QMessageBox.information(self, "标题", "数据保存完成", QMessageBox.Ok)
+                        self.statusBar().showMessage(self.tr('File save success'))
+                        QMessageBox.information(self, self.tr("Notice"), self.tr("File save success"), QMessageBox.Ok)
                     elif path[1] == 'CSV (*.csv)':
                         np.savetxt(path[0], self.part_tdms.T, delimiter=',',header='time (ms),current (nA),Voltage (V)')
                         self.statusBar().showMessage('Saved to %s' % path[0])
-                        self.statusBar().showMessage('数据保存完成')
-                        QMessageBox.information(self, "标题", "数据保存完成", QMessageBox.Ok)
+                        self.statusBar().showMessage(self.tr('File save success'))
+                        QMessageBox.information(self, self.tr("Notice"), self.tr("File save success"), QMessageBox.Ok)
             else:
                 if path[1] == 'mat (*.mat)':
                     sio.savemat(path[0], {'f': self.tdms_data.T})
                     self.statusBar().showMessage('Saved to %s' % path[0])
-                    self.statusBar().showMessage('数据保存完成')
-                    QMessageBox.information(self, "标题", "数据保存完成", QMessageBox.Ok)
+                    self.statusBar().showMessage(self.tr('File save success'))
+                    QMessageBox.information(self, self.tr("Notice"), self.tr("File save success"), QMessageBox.Ok)
                 elif path[1] == 'CSV (*.csv)':
                     np.savetxt(path[0], self.tdms_data.T, delimiter=',',header='time (ms),current (nA),Voltage (V)')
                     self.statusBar().showMessage('Saved to %s' % path[0])
-                    self.statusBar().showMessage('数据保存完成')
-                    QMessageBox.information(self, "标题", "数据保存完成", QMessageBox.Ok)
+                    self.statusBar().showMessage(self.tr('File save success'))
+                    QMessageBox.information(self, self.tr("Notice"), self.tr("File save success"), QMessageBox.Ok)
 
         else:
-            self.statusBar().showMessage('请选择保存文件位置')
+            QMessageBox.information(self, self.tr("Warning"), self.tr("Please set save path"), QMessageBox.Ok)
+            self.statusBar().showMessage(self.tr("Please set save path"))
             pass
 
