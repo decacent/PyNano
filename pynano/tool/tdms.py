@@ -31,8 +31,10 @@ def read_tdms(fn):
     time = channel1.time_track()
     data = np.array((time, current * 500, voltage))
     return data,sam
+    
 def abf_to_mat(fn):
     pass
+
 class Tdms_read(QMainWindow, Ui_Read_Tdms):
     def __init__(self, parent=None):
         super(Tdms_read, self).__init__(parent)
