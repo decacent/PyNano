@@ -8,6 +8,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+
 class Ui_CaclNanopore(object):
     def setupUi(self, CaclNanopore):
         CaclNanopore.setObjectName("CaclNanopore")
@@ -29,31 +30,32 @@ class Ui_CaclNanopore(object):
         font.setBold(True)
         font.setWeight(75)
         self.pushButton_11.setFont(font)
-        self.pushButton_11.setStyleSheet("QPushButton\n"
-"\n"
-"{ image: url(:/img/img47.ico);\n"
-"    border:none;\n"
-"    \n"
-"    background-color: rgba(230, 126, 34,0);\n"
-"    \n"
-"\n"
-"    \n"
-"}\n"
-"QPushButton:hover, QPushButton:pressed , QPushButton:checked\n"
-"{\n"
-"    image: url(:/img/img47s.ico);\n"
-"    \n"
-"    border:none;\n"
-"    background-color: rgba(230, 126, 34,0);\n"
-"    \n"
-"}")
+        self.pushButton_11.setStyleSheet(
+            "QPushButton\n"
+            "\n"
+            "{ image: url(:/img/img47.ico);\n"
+            "    border:none;\n"
+            "    \n"
+            "    background-color: rgba(230, 126, 34,0);\n"
+            "    \n"
+            "\n"
+            "    \n"
+            "}\n"
+            "QPushButton:hover, QPushButton:pressed , QPushButton:checked\n"
+            "{\n"
+            "    image: url(:/img/img47s.ico);\n"
+            "    \n"
+            "    border:none;\n"
+            "    background-color: rgba(230, 126, 34,0);\n"
+            "    \n"
+            "}")
         self.pushButton_11.setObjectName("pushButton_11")
         self.textEdit = QtWidgets.QTextEdit(self.centralwidget)
         self.textEdit.setGeometry(QtCore.QRect(290, 70, 70, 40))
         self.textEdit.setMinimumSize(QtCore.QSize(70, 40))
         self.textEdit.setMaximumSize(QtCore.QSize(70, 40))
         self.textEdit.setStyleSheet("color: rgb(0, 0, 0);\n"
-"font: 15pt \"Times New Roman\";")
+                                    "font: 15pt \"Times New Roman\";")
         self.textEdit.setObjectName("textEdit")
         self.label_14 = QtWidgets.QLabel(self.centralwidget)
         self.label_14.setGeometry(QtCore.QRect(290, 40, 111, 16))
@@ -179,7 +181,7 @@ class Ui_CaclNanopore(object):
         self.textEdit_lq.setMinimumSize(QtCore.QSize(70, 40))
         self.textEdit_lq.setMaximumSize(QtCore.QSize(70, 40))
         self.textEdit_lq.setStyleSheet("color: rgb(0, 0, 0);\n"
-"font: 15pt \"Times New Roman\";")
+                                       "font: 15pt \"Times New Roman\";")
         self.textEdit_lq.setObjectName("textEdit_lq")
         self.label_tex = QtWidgets.QLabel(self.centralwidget)
         self.label_tex.setGeometry(QtCore.QRect(100, 340, 211, 41))
@@ -196,24 +198,49 @@ class Ui_CaclNanopore(object):
         _translate = QtCore.QCoreApplication.translate
         CaclNanopore.setWindowTitle(_translate("CaclNanopore", "MainWindow"))
         self.pushButton_11.setText(_translate("CaclNanopore", "Run"))
-        self.textEdit.setHtml(_translate("CaclNanopore", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'Times New Roman\'; font-size:15pt; font-weight:400; font-style:normal;\">\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'SimSun\'; font-size:18pt; color:#000000;\">15</span></p></body></html>"))
-        self.label_14.setText(_translate("CaclNanopore", "<html><head/><body><p>Diameter/nm</p></body></html>"))
-        self.label_9.setText(_translate("CaclNanopore", "<html><head/><body><p><span style=\" font-size:10pt;\">Caculate the pore size of solid state nanopore</span></p></body></html>"))
+        self.textEdit.setHtml(
+            _translate(
+                "CaclNanopore",
+                "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+                "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+                "p, li { white-space: pre-wrap; }\n"
+                "</style></head><body style=\" font-family:\'Times New Roman\'; font-size:15pt; font-weight:400; font-style:normal;\">\n"
+                "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'SimSun\'; font-size:18pt; color:#000000;\">15</span></p></body></html>"))
+        self.label_14.setText(
+            _translate(
+                "CaclNanopore",
+                "<html><head/><body><p>Diameter/nm</p></body></html>"))
+        self.label_9.setText(
+            _translate(
+                "CaclNanopore",
+                "<html><head/><body><p><span style=\" font-size:10pt;\">Caculate the pore size of solid state nanopore</span></p></body></html>"))
         self.label_10.setText(_translate("CaclNanopore", "Voltage/mv"))
-        self.label_11.setText(_translate("CaclNanopore", "<html><head/><body><p>Current/nA</p></body></html>"))
+        self.label_11.setText(
+            _translate(
+                "CaclNanopore",
+                "<html><head/><body><p>Current/nA</p></body></html>"))
         self.label_13.setText(_translate("CaclNanopore", "Conductivity"))
         self.label_12.setText(_translate("CaclNanopore", "Thickness/nm"))
-        self.label.setText(_translate("CaclNanopore", "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600;\">Analyte DIA/nm</span></p></body></html>"))
-        self.label_2.setText(_translate("CaclNanopore", "<html><head/><body><p><span style=\" font-size:11pt; font-weight:600;\">I/I0</span></p></body></html>"))
-        self.textEdit_lq.setHtml(_translate("CaclNanopore", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'Times New Roman\'; font-size:15pt; font-weight:400; font-style:normal;\">\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">0</p></body></html>"))
-        self.label_tex.setText(_translate("CaclNanopore", "<html><head/><body><p><span style=\" font-family:\'Calibri\'; font-size:20pt; font-style:italic;\">G=σ[4l/πd</span><span style=\" font-family:\'Calibri\'; font-size:20pt; font-style:italic; vertical-align:super;\">2</span><span style=\" font-family:\'Calibri\'; font-size:20pt; font-style:italic;\">+1/d]</span><span style=\" font-family:\'Calibri\'; font-size:20pt; font-style:italic; vertical-align:super;\">-1</span></p></body></html>"))
+        self.label.setText(
+            _translate(
+                "CaclNanopore",
+                "<html><head/><body><p><span style=\" font-size:10pt; font-weight:600;\">Analyte DIA/nm</span></p></body></html>"))
+        self.label_2.setText(
+            _translate(
+                "CaclNanopore",
+                "<html><head/><body><p><span style=\" font-size:11pt; font-weight:600;\">I/I0</span></p></body></html>"))
+        self.textEdit_lq.setHtml(
+            _translate(
+                "CaclNanopore",
+                "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+                "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+                "p, li { white-space: pre-wrap; }\n"
+                "</style></head><body style=\" font-family:\'Times New Roman\'; font-size:15pt; font-weight:400; font-style:normal;\">\n"
+                "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">0</p></body></html>"))
+        self.label_tex.setText(
+            _translate(
+                "CaclNanopore",
+                "<html><head/><body><p><span style=\" font-family:\'Calibri\'; font-size:20pt; font-style:italic;\">G=σ[4l/πd</span><span style=\" font-family:\'Calibri\'; font-size:20pt; font-style:italic; vertical-align:super;\">2</span><span style=\" font-family:\'Calibri\'; font-size:20pt; font-style:italic;\">+1/d]</span><span style=\" font-family:\'Calibri\'; font-size:20pt; font-style:italic; vertical-align:super;\">-1</span></p></body></html>"))
+
 
 import ui.images

@@ -47,7 +47,6 @@ class StructFile(BufferedReader):
         self.write(struct.pack(fmt, *args))
 
 
-
 def reformat_integer_v2(data, nbchannel, header):
     """
     reformat when dtype is int16 for ABF version 2
@@ -72,7 +71,6 @@ def clean_string(s):
 
 class Abf_io():
 
-
     def __init__(self, filename=None):
         """
         This class read a abf file.
@@ -81,7 +79,7 @@ class Abf_io():
             filename : the filename to read
 
         """
-        
+
         self.filename = filename
 
     def read_abf(self, lazy=False, cascade=True):
@@ -94,8 +92,6 @@ class Abf_io():
         elif header['nDataFormat'] == 1:
             dt = np.dtype('f4')
 
-
-
         nbchannel = header['sections']['ADCSection']['llNumEntries']
         head_offset = header['sections']['DataSection']['uBlockIndex'] * BLOCKSIZE
 
@@ -103,8 +99,6 @@ class Abf_io():
 
         data = np.memmap(self.filename, dt, 'r',
                          shape=(totalsize,), offset=head_offset)
-
-       
 
         mode = header['protocol']['nOperationMode']
 
@@ -116,9 +110,9 @@ class Abf_io():
             # read sweep pos
 
             nbepisod = header['sections']['SynchArraySection'][
-                    'llNumEntries']
+                'llNumEntries']
             offset_episode = header['sections']['SynchArraySection'][
-                    'uBlockIndex'] * BLOCKSIZE
+                'uBlockIndex'] * BLOCKSIZE
             if nbepisod > 0:
                 episode_array = np.memmap(
                     self.filename, [('offset', 'i4'), ('len', 'i4')], 'r',
@@ -130,15 +124,13 @@ class Abf_io():
 
             # sampling_rate
 
-
             sampling_rate = 1.e6 / \
                 header['protocol']['fADCSequenceInterval']
             pos = 0
-            datas=[]
-            for j in range(episode_array.size):   
+            datas = []
+            for j in range(episode_array.size):
 
                 length = episode_array[j]['len']
-
 
                 fSynchTimeUnit = header['protocol']['fSynchTimeUnit']
 
@@ -146,8 +138,8 @@ class Abf_io():
                     length /= fSynchTimeUnit
 
                 if not lazy:
-                    subdata = data[pos:pos+length]
-                    subdata = subdata.reshape((int(subdata.size/nbchannel),
+                    subdata = data[pos:pos + length]
+                    subdata = subdata.reshape((int(subdata.size / nbchannel),
                                                nbchannel)).astype('f')
                     if dt == np.dtype('i2'):
                         reformat_integer_v2(subdata, nbchannel, header)
@@ -240,12 +232,19 @@ class Abf_io():
             # hack for reading channels names and units
             fid.seek(sections['StringsSection']['uBlockIndex'] * BLOCKSIZE)
             big_string = fid.read(sections['StringsSection']['uBytes'])
-            goodstart=-1
-            for key in [b'AXENGN', b'clampex', b'Clampex', b'axoscope',b'Clampfit']:
+            goodstart = -1
+            for key in [
+                b'AXENGN',
+                b'clampex',
+                b'Clampex',
+                b'axoscope',
+                    b'Clampfit']:
                 #goodstart = big_string.lower().find(key)
                 goodstart = big_string.find(key)
-                if goodstart!=-1: break
-            assert goodstart!=-1, 'This file do not contain clampex, axoscope or clampfit in the header'
+                if goodstart != -1:
+                    break
+            assert goodstart != - \
+                1, 'This file do not contain clampex, axoscope or clampfit in the header'
             big_string = big_string[goodstart:]
             strings = big_string.split(b'\x00')
 
@@ -348,8 +347,6 @@ class Abf_io():
         return header
 
 
-
-
 BLOCKSIZE = 512
 
 headerDescriptionV1 = [
@@ -377,8 +374,8 @@ headerDescriptionV1 = [
     ('nFileStartMillisecs', 366, 'h'),
     ('nADCPtoLChannelMap', 378, '16h'),
     ('nADCSamplingSeq', 410, '16h'),
-    ('sADCChannelName', 442, '10s'*16),
-    ('sADCUnits', 602, '8s'*16),
+    ('sADCChannelName', 442, '10s' * 16),
+    ('sADCUnits', 602, '8s' * 16),
     ('fADCProgrammableGain', 730, '16f'),
     ('fInstrumentScaleFactor', 922, '16f'),
     ('fInstrumentOffset', 986, '16f'),
@@ -406,7 +403,7 @@ headerDescriptionV1 = [
     ('nTelegraphEnable', 4512, '16h'),
     ('fTelegraphAdditGain', 4576, '16f'),
     ('sProtocolPath', 4898, '384s'),
-    ]
+]
 
 
 headerDescriptionV2 = [
@@ -428,7 +425,7 @@ headerDescriptionV2 = [
     ('uModifierVersion', 64, 'I'),
     ('uModifierNameIndex', 68, 'I'),
     ('uProtocolPathIndex', 72, 'I'),
-    ]
+]
 
 
 sectionNames = [
@@ -450,7 +447,7 @@ sectionNames = [
     'SynchArraySection',
     'AnnotationSection',
     'StatsSection',
-    ]
+]
 
 
 protocolInfoDescription = [
@@ -525,7 +522,7 @@ protocolInfoDescription = [
     ('nDigitizerTotalDigitalOuts', 'h'),
     ('nDigitizerSynchDigitalOuts', 'h'),
     ('nDigitizerType', 'h'),
-    ]
+]
 
 ADCInfoDescription = [
     ('nADCNum', 'h'),
@@ -555,14 +552,14 @@ ADCInfoDescription = [
     ('nStatsChannelPolarity', 'h'),
     ('lADCChannelNameIndex', 'i'),
     ('lADCUnitsIndex', 'i'),
-    ]
+]
 
 TagInfoDescription = [
     ('lTagTime', 'i'),
     ('sComment', '56s'),
     ('nTagType', 'h'),
     ('nVoiceTagNumber_or_AnnotationIndex', 'h'),
-    ]
+]
 
 DACInfoDescription = [
     ('nDACNum', 'h'),
@@ -607,7 +604,7 @@ DACInfoDescription = [
     ('fMembTestPostSettlingTimeMS', 'f'),
     ('nLeakSubtractADCIndex', 'h'),
     ('sUnused', '124s'),
-    ]
+]
 
 EpochInfoPerDACDescription = [
     ('nEpochNum', 'h'),
@@ -620,7 +617,7 @@ EpochInfoPerDACDescription = [
     ('lEpochPulsePeriod', 'i'),
     ('lEpochPulseWidth', 'i'),
     ('sUnused', '18s'),
-    ]
+]
 
 EpochInfoDescription = [
     ('nEpochNum', 'h'),
@@ -630,7 +627,7 @@ EpochInfoDescription = [
     ('nAlternateDigitalTrainValue', 'h'),
     ('bEpochCompression', 'b'),
     ('sUnused', '21s'),
-    ]
-    
+]
+
 if __name__ == '__main__':
     pass

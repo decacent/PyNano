@@ -26,7 +26,7 @@ import os
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QMessageBox
 from nptdms import TdmsFile
 import numpy as np
-from ui.tdms_ui import *
+from ui.tdms_ui import Ui_Read_Tdms
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationToolbar
 import matplotlib.pyplot as plt

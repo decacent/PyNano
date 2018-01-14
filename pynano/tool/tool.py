@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QMainWindow
 from tool.calPore import Cacl
 from tool.tdms import Tdms_read
 
+
 class Analy_tool(QMainWindow, Ui_toolbox):
     def __init__(self, parent=None):
         super(Analy_tool, self).__init__(parent)
@@ -32,9 +33,3 @@ class Analy_tool(QMainWindow, Ui_toolbox):
         self.verticalLayout_tool.addWidget(self.window2)
         self.window2.show()
         self.statusBar().showMessage("读取TDMS")
-
-
-
-
-
-
