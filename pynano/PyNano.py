@@ -1,4 +1,24 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
+
+# encoding: utf-8
+
+'''
+
+@author: decacent
+
+@license: Copyright (C) 2017-2018 decacent. All rights reserved.
+
+@contact: shaochuang_routine@outlook.com
+
+@software: pycharm
+
+@file: PyNano.py
+
+@time: 2018/1/14 18:27
+
+@desc:
+
+'''
 
 
 import gc
@@ -33,11 +53,14 @@ mpl.rcParams['agg.path.chunksize'] = 10000
 
 
 class Extract_1(QtCore.QThread):
+
+
     trigger = pyqtSignal(list)
 
-    def __init__(self, data, model, peak_th, base, endth, base_num, end_num, is_up, th=100, sam=100000, re_sam=100000,
+    def __init__(self, init_time,data, model, peak_th, base, endth, base_num, end_num, is_up, th=100, sam=100000, re_sam=100000,
                  is_resam=False, parent=None):
         super(Extract_1, self).__init__()
+        self.init_time=init_time
         self.data = data
         self.model = model
         self.peak_th = peak_th
@@ -64,13 +87,13 @@ class Extract_1(QtCore.QThread):
                                                                        base_num=self.base_num,
                                                                        end_num=self.end_num, is_up=self.is_up)
             elif self.model == 2:
-                self.extracted_signal, self.fit_data = signal_extract2(data=self.data,
+                self.extracted_signal, self.fit_data = signal_extract2(init_time=self.init_time, data=self.data,
                                                                        peak_th=self.peak_th, base=self.base,
                                                                        th=self.th,
                                                                        sam=self.sam, is_resam=self.is_resam,
                                                                        re_sam=self.re_sam, is_up=self.is_up)
             else:
-                self.extracted_signal, self.fit_data = signal_extract3(data=self.data,
+                self.extracted_signal, self.fit_data = signal_extract3(init_time=self.init_time, data=self.data,
                                                                        peak_th=self.peak_th, base=self.base,
                                                                        th=self.th,
                                                                        sam=self.sam, is_resam=self.is_resam,
@@ -550,9 +573,9 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
             return None
         file_choices = "CSV (*.csv);;mat (*.mat)"
         path = QFileDialog.getSaveFileName(self, self.tr('Save Result'), '', file_choices)
-        head3 = 'Current,Time,I/I0'
-        head6 = 'Current,Time,I/I0,Baseline,Delta I,Charge'
-        head7 = 'Current,Time,I/I0,Baseline,Delta I,Charge,Initial time'
+        head3 = 'Current(pA),Time(ms),I/I0'
+        head6 = 'Current(pA),Time(ms),I/I0,Baseline(pA),Delta I(pA),Charge(pC)'
+        head7 = 'Current(pA),Time(ms),I/I0,Baseline(pA),Delta I(pA),Charge(pC),Initial time(ms)'
         head = ['Current(pA)', 'Time (ms)', 'normI', 'Baseline (pA)', 'DeltaI (pA)', 'Charge (pC)', 'InitialTime']
         head_index = np.shape(self.extracted_signal)[1]
         if head_index == 3:
@@ -563,18 +586,22 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
             head_row1 = head7
 
         if path[0] is not '':
+            try:
+                if path[1] == 'mat (*.mat)':
+                    mat_dict = {}
+                    for i in range(head_index):
+                        mat_dict[head[i]] = self.extracted_signal[:, i]
+                    self.statusBar().showMessage(self.tr('Saved to %s' % path[0]))
+                    sio.savemat(path[0], mat_dict)
+                elif path[1] == 'CSV (*.csv)':
+                    self.statusBar().showMessage(self.tr('Saved to %s' % path[0]))
+                    np.savetxt(path[0], self.extracted_signal, delimiter=',', header=head_row1)
+                self.statusBar().showMessage(self.tr('Save success'))
+                QMessageBox.information(self, self.tr("Notice"), self.tr("Save success"), QMessageBox.Ok)
+            except:
+                QMessageBox.information(self, self.tr("Alert"), self.tr("Save failed/n Please check whether the file is occupied. "), QMessageBox.Ok)
+                self.statusBar().showMessage(self.tr('Save failed'))
 
-            if path[1] == 'mat (*.mat)':
-                mat_dict = {}
-                for i in range(head_index):
-                    mat_dict[head[i]] = self.extracted_signal[:, i]
-                self.statusBar().showMessage(self.tr('Saved to %s' % path[0]))
-                sio.savemat(path[0], mat_dict)
-            elif path[1] == 'CSV (*.csv)':
-                self.statusBar().showMessage(self.tr('Saved to %s' % path[0]))
-                np.savetxt(path[0], self.extracted_signal, delimiter=',', header=head_row1)
-            self.statusBar().showMessage(self.tr('Save success'))
-            QMessageBox.information(self, self.tr("Notice"), self.tr("Save success"), QMessageBox.Ok)
         else:
             QMessageBox.information(self, self.tr("Alert"), self.tr("Save failed"), QMessageBox.Ok)
             self.statusBar().showMessage(self.tr('Save failed'))
@@ -614,7 +641,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
 
     def extract(self):
         # 提取信号
-        if self.fn == '' and self.data is None:
+        if self.fn[0] == '' and self.data is None:
             self.statusBar().showMessage(self.tr("No opened file"))
             QMessageBox.information(self, self.tr("Warning"), self.tr("No opened file"), QMessageBox.Ok)
             pass
@@ -650,8 +677,8 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                         self.analysis_data = self.data[self.sweep][:]
                 try:
                     self.statusBar().showMessage(self.tr("Runing..."))
-                    self.extract1 = Extract_1(data=self.analysis_data, model=self.comboBox.currentIndex(),
-                                              peak_th=self.peak_th,
+                    self.extract1 = Extract_1(init_time=self.star_point/100, data=self.analysis_data,
+                                              model=self.comboBox.currentIndex(),peak_th=self.peak_th,
                                               base=self.baseline, endth=self.endth, base_num=self.base_num,
                                               end_num=self.end_num, th=self.th,
                                               sam=self.sam, is_resam=self.is_resam, re_sam=self.re_sam,
@@ -809,9 +836,10 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                 self.markov_stage = []
 
     def loadabf(self):
-        # 载入ABF文件
+
         self.statusBar().showMessage(self.tr("Open file"))
         self.fn = QFileDialog.getOpenFileName(self,self.tr("Open file"), filter='Abf Files (*.abf);;Xdat Files (*.xdat)')
+        print(self.fn)
         if self.fn[0] == '':
             self.statusBar().showMessage(self.tr("No file selected"))
             pass

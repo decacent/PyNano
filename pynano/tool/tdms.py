@@ -1,9 +1,26 @@
-# -*- coding: utf-8 -*-
-"""
+#!/usr/bin/env python
+
+# encoding: utf-8
+
+'''
+
+@author: decacent
+
+@license: Copyright (C) 2017-2018 decacent. All rights reserved.
+
+@contact: shaochuang_routine@outlook.com
+
+@software: pycharm
+
+@file: tdms.py
+
+@time: 2017/8/14 18:27
+
+@desc:
+
+'''
 
 
-@author: Wnight
-"""
 import scipy.io as sio
 import os
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QMessageBox

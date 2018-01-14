@@ -77,10 +77,10 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
-    <name>Dialog</name>
+    <name>Setup</name>
     <message>
         <location filename="pynano/ui/input_par.py" line="194"/>
-        <source>Dialog</source>
+        <source>Setup</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

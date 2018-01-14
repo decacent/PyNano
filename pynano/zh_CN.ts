@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="2.0" language="zh_CN" sourcelanguage="en_US">
+<!DOCTYPE TS>
+<TS version="2.1" language="zh_CN" sourcelanguage="en_US">
 <context>
     <name>CaclNanopore</name>
     <message>
         <location filename="calPore_ui.py" line="197"/>
         <source>MainWindow</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="calPore_ui.py" line="198"/>
         <source>Run</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="calPore_ui.py" line="199"/>
@@ -19,47 +20,47 @@
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Times New Roman&apos;; font-size:15pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:&apos;SimSun&apos;; font-size:18pt; color:#000000;&quot;&gt;15&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="calPore_ui.py" line="204"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Diameter/nm&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;直径/nm&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="calPore_ui.py" line="205"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Caculate the pore size of solid state nanopore&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;氮化硅纳米孔孔径计算&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="calPore_ui.py" line="206"/>
         <source>Voltage/mv</source>
-        <translation type="unfinished"></translation>
+        <translation>电压/mv</translation>
     </message>
     <message>
         <location filename="calPore_ui.py" line="207"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Current/nA&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;电流/nA&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="calPore_ui.py" line="208"/>
         <source>Conductivity</source>
-        <translation type="unfinished"></translation>
+        <translation>电导率</translation>
     </message>
     <message>
         <location filename="calPore_ui.py" line="209"/>
         <source>Thickness/nm</source>
-        <translation type="unfinished"></translation>
+        <translation>厚度/nm</translation>
     </message>
     <message>
         <location filename="calPore_ui.py" line="210"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Analyte DIA/nm&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;待测物直径/nm&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="calPore_ui.py" line="211"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;I/I0&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="calPore_ui.py" line="212"/>
@@ -68,12 +69,12 @@ p, li { white-space: pre-wrap; }
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Times New Roman&apos;; font-size:15pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;0&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="calPore_ui.py" line="217"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:&apos;Calibri&apos;; font-size:20pt; font-style:italic;&quot;&gt;G=σ[4l/πd&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Calibri&apos;; font-size:20pt; font-style:italic; vertical-align:super;&quot;&gt;2&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Calibri&apos;; font-size:20pt; font-style:italic;&quot;&gt;+1/d]&lt;/span&gt;&lt;span style=&quot; font-family:&apos;Calibri&apos;; font-size:20pt; font-style:italic; vertical-align:super;&quot;&gt;-1&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -81,7 +82,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="input_par.py" line="194"/>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="input_par.py" line="195"/>
@@ -325,7 +326,7 @@ Exit really?</source>
     </message>
     <message>
         <location filename="PyNano.py" line="687"/>
-        <source>Errors&#xef;&#xbc;&#x8c;please checkup the setup</source>
+        <source>Errorsï¼please checkup the setup</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -350,7 +351,7 @@ Exit really?</source>
     </message>
     <message>
         <location filename="PyNano.py" line="795"/>
-        <source>No &#xce;&#x94;I result</source>
+        <source>No ÎI result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -400,7 +401,7 @@ Exit really?</source>
     </message>
     <message>
         <location filename="PyNano.py" line="835"/>
-        <source>File load error&#xef;&#xbc;&#x8c;Abf version should &gt; 2.0 </source>
+        <source>File load errorï¼Abf version should &gt; 2.0 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -583,7 +584,7 @@ p, li { white-space: pre-wrap; }
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;2.0&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="about.py" line="163"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Current version：&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
@@ -826,7 +827,7 @@ p, li { white-space: pre-wrap; }
         <source>Markov analysis panel</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="main_ui.py" line="1437"/>
         <source>△I</source>
         <translation type="unfinished"></translation>

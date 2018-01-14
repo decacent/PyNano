@@ -1,11 +1,24 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Jul  5 09:42:21 2017
+#!/usr/bin/env python
 
-@author: HPC
-"""
+# encoding: utf-8
 
-#xdata read
+'''
+
+@author: decacent
+
+@license: Copyright (C) 2017-2018 decacent. All rights reserved.
+
+@contact: shaochuang_routine@outlook.com
+
+@software: pycharm
+
+@file: xdatio.py
+
+@time: 2017/11/14 10:27
+
+@desc:
+
+'''
 
 import struct
 from io import open, BufferedReader

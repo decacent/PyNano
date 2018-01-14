@@ -191,7 +191,7 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
+        Dialog.setWindowTitle(_translate("Dialog", "Setup"))
         self.checkBox_resam.setText(_translate("Dialog", "resample"))
         self.radioButton_3.setText(_translate("Dialog", "downwards"))
         self.label_2.setText(_translate("Dialog", "Signal Threshold"))

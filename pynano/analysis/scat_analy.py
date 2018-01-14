@@ -1,16 +1,26 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Apr 18 20:49:40 2017
+#!/usr/bin/env python
 
-@author: HPC
-"""
+# encoding: utf-8
 
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Apr 13 15:43:08 2017
+'''
 
-@author: Wnight
-"""
+@author: decacent
+
+@license: Copyright (C) 2017-2018 decacent. All rights reserved.
+
+@contact: shaochuang_routine@outlook.com
+
+@software: pycharm
+
+@python version: python3.5, python3.6
+
+@file: scat_analy.py
+
+@time: 2017/5/14 18:27
+
+@desc:
+
+'''
 
 import numpy as np
 from time import strftime
@@ -152,7 +162,7 @@ def signal_extract(data, th=100, sam=100000, is_resam=False, re_sam=100000):
     return data1.T, re_current,
 
 
-def signal_extract2(data, peak_th, base, th=100, sam=100000, re_sam=100000, is_resam=False, is_up=False):
+def signal_extract2(init_time, data, peak_th, base, th=100, sam=100000, re_sam=100000, is_resam=False, is_up=False):
     """
     拟合单峰电流数据，
     数据输入：data：原始数据，单行或单列电流信号
@@ -172,10 +182,10 @@ def signal_extract2(data, peak_th, base, th=100, sam=100000, re_sam=100000, is_r
     current = np.array(data)
     sam_temp=current.shape[0]
     if is_resam and re_sam < sam:
-        #        print('信号重采样1')
+        print('信号重采样1')
         #        print(strftime("%m/%d/%Y %H:%M:%S"))
         current = resample(current, int(len(current) / (sam / re_sam)))
-        #        print('信号重采样2')
+        print('信号重采样2')
         #        print(strftime("%m/%d/%Y %H:%M:%S"))
         current = resample(current, sam_temp)
     # print('信号重采样完成')
@@ -277,7 +287,7 @@ def signal_extract2(data, peak_th, base, th=100, sam=100000, re_sam=100000, is_r
             result[3].append(temp_base)  # 基线
             result[4].append(value1 - temp_base)  # Delta I
             result[5].append(charge)  # 积分电荷
-            result[6].append(start_point / sam * 1000)  # 信号起始时间
+            result[6].append(start_point / sam * 1000+init_time)  # 信号起始时间
 
     else:
         for index, value in enumerate(signal_peak_current):
@@ -343,14 +353,14 @@ def signal_extract2(data, peak_th, base, th=100, sam=100000, re_sam=100000, is_r
             result[3].append(temp_base)  # 基线
             result[4].append(temp_base - value1)  # Delta I
             result[5].append(charge)  # 积分电荷
-            result[6].append(start_point / sam * 1000)  # 信号起始时间
+            result[6].append(start_point / sam * 1000+init_time)  # 信号起始时间
 
 
     result = np.array(result).T
     return result, data1
 
 
-def signal_extract3(data, peak_th, base, th=100, sam=100000, re_sam=100000, is_resam=False, is_up=False):
+def signal_extract3(init_time, data, peak_th, base, th=100, sam=100000, re_sam=100000, is_resam=False, is_up=False):
     """
     拟合多峰nanopore电流数据，
     数据输入：data：原始数据，单行或单列电流信号
@@ -370,10 +380,10 @@ def signal_extract3(data, peak_th, base, th=100, sam=100000, re_sam=100000, is_r
     current = np.array(data)
     sam_temp = current.shape[0]
     if is_resam and re_sam < sam:
-        #        print('信号重采样1')
+        print('信号重采样1')
         #        print(strftime("%m/%d/%Y %H:%M:%S"))
         current = resample(current, int(len(current) / (sam / re_sam)))
-        #        print('信号重采样2')
+        print('信号重采样2')
         #        print(strftime("%m/%d/%Y %H:%M:%S"))
         current = resample(current, sam_temp)
     # print('信号重采样完成')
@@ -489,7 +499,7 @@ def signal_extract3(data, peak_th, base, th=100, sam=100000, re_sam=100000, is_r
                 result[3].append([temp_base]*len(t4))
                 result[4].append(list((value1 - temp_base)))  # Delta I
                 result[5].append([charge]*len(t4))
-                result[6].append([start_point / sam * 1000]*len(t4))  # 信号起始时间
+                result[6].append([start_point / sam * 1000+init_time]*len(t4))  # 信号起始时间
                 
             #
             #
@@ -515,7 +525,7 @@ def signal_extract3(data, peak_th, base, th=100, sam=100000, re_sam=100000, is_r
                 result[3].append([temp_base])
                 result[4].append([t4[0]-temp_base])
                 result[5].append([charge])
-                result[6].append([start_point / sam * 1000])
+                result[6].append([start_point / sam * 1000+init_time])
 
     else:
         for index, value in enumerate(signal_peak_current):
@@ -590,7 +600,7 @@ def signal_extract3(data, peak_th, base, th=100, sam=100000, re_sam=100000, is_r
                 result[3].append([temp_base]*len(t4))
                 result[4].append(list((value1 - temp_base)))  # Delta I
                 result[5].append([charge]*len(t4))
-                result[6].append([start_point / sam * 1000]*len(t4))  # 信号起始时间
+                result[6].append([start_point / sam * 1000+init_time]*len(t4))  # 信号起始时间
 
                 #            k1 = np.arange(len(temp4),dtype='f')
                 #            k2=np.array((k1,temp4)).T
@@ -611,7 +621,7 @@ def signal_extract3(data, peak_th, base, th=100, sam=100000, re_sam=100000, is_r
                 result[3].append([temp_base])
                 result[4].append([t4[0]-temp_base])
                 result[5].append([charge])
-                result[6].append([start_point / sam * 1000])
+                result[6].append([start_point / sam * 1000+init_time])
 
         
     index=[[i]*len(j) for i,j in zip(range(len(result[0])),result[0])]
