@@ -148,7 +148,7 @@ QPushButton:hover, QPushButton:pressed , QPushButton:checked
        </size>
       </property>
       <property name="maximum">
-       <number>250000</number>
+       <number>1000000</number>
       </property>
       <property name="value">
        <number>100000</number>
@@ -483,7 +483,7 @@ QPushButton:hover, QPushButton:pressed , QPushButton:checked
        <number>4</number>
       </property>
       <property name="maximum">
-       <double>5000.000000000000000</double>
+       <double>100000000.000000000000000</double>
       </property>
      </widget>
     </item>

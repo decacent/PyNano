@@ -77,7 +77,7 @@ class Ui_Dialog(object):
         self.spinBox_sam = QtWidgets.QSpinBox(self.layoutWidget)
         self.spinBox_sam.setMinimumSize(QtCore.QSize(70, 25))
         self.spinBox_sam.setMaximumSize(QtCore.QSize(70, 25))
-        self.spinBox_sam.setMaximum(250000)
+        self.spinBox_sam.setMaximum(1000000)
         self.spinBox_sam.setProperty("value", 100000)
         self.spinBox_sam.setObjectName("spinBox_sam")
         self.gridLayout.addWidget(self.spinBox_sam, 1, 1, 1, 1)
@@ -182,7 +182,7 @@ class Ui_Dialog(object):
         self.doubleSpinBox_th.setMaximumSize(QtCore.QSize(70, 25))
         self.doubleSpinBox_th.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
         self.doubleSpinBox_th.setDecimals(4)
-        self.doubleSpinBox_th.setMaximum(5000.0)
+        self.doubleSpinBox_th.setMaximum(100000000.0)
         self.doubleSpinBox_th.setObjectName("doubleSpinBox_th")
         self.gridLayout_2.addWidget(self.doubleSpinBox_th, 0, 3, 1, 1)
 
@@ -191,7 +191,7 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Setup"))
+        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
         self.checkBox_resam.setText(_translate("Dialog", "resample"))
         self.radioButton_3.setText(_translate("Dialog", "downwards"))
         self.label_2.setText(_translate("Dialog", "Signal Threshold"))
