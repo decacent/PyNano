@@ -769,7 +769,8 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
 
     def extract(self):
         # 提取信号
-        if self.fn[0] == '' and self.data is None:
+        # if self.fn[0] == '' and self.data is None:
+        if self.data is None:
             self.statusBar().showMessage(self.tr("No opened file"))
             QMessageBox.information(
                 self,
@@ -1029,10 +1030,12 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         self.statusBar().showMessage(self.tr("Open file"))
         self.fn = QFileDialog.getOpenFileName(self, self.tr(
             "Open file"), filter='Abf Files (*.abf);;Xdat Files (*.xdat)')
-        print(self.fn)
+        print(self.fn[0])
+        print(self.fn[1])
         if self.fn[0] == '':
             self.statusBar().showMessage(self.tr("No file selected"))
-            pass
+            self.fn = ''
+            return None
         elif self.fn[1] == 'Abf Files (*.abf)':
             self.statusBar().showMessage(self.tr("Reading ABF.."))
             try:
@@ -1095,7 +1098,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                     QMessageBox.Ok)
 
     def viewdata(self):
-        if self.fn[0] == '' and not self.is_read:
+        if self.fn == '' and self.data is None:
             self.statusBar().showMessage(self.tr('No file loaded'))
             QMessageBox.information(
                 self,
@@ -1147,7 +1150,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
 
     def next_view(self):
         # 部分预览数据
-        if self.fn == '' and not self.is_read:
+        if  self.fn == '' and not self.is_read:
             self.statusBar().showMessage(self.tr('No file loaded'))
             QMessageBox.information(
                 self,
@@ -1389,21 +1392,21 @@ if __name__ == '__main__':
     '''
     app = QApplication(sys.argv)
 
-    if os.path.exists('a.ini'):
-        settings1 = QtCore.QSettings(r'a.ini', QtCore.QSettings.IniFormat)
-        settings1.beginGroup('window')
-        settings1.setIniCodec('UTF-8')
-        langues = settings1.value(r'language')
+   # if os.path.exists('a.ini'):
+     #   settings1 = QtCore.QSettings(r'a.ini', QtCore.QSettings.IniFormat)
+    #    settings1.beginGroup('window')
+   #     settings1.setIniCodec('UTF-8')
+   #     langues = settings1.value(r'language')
         # if s1=='zh_CN':
         #chinese = (s1=='zh_CN')
-        print(langues)
+    #    print(langues)
 
-    else:
-        langues = "English"
-    if langues == "zh_CN":
-        trans = QtCore.QTranslator()
-        trans.load("zh_CN")
-        app.installTranslator(trans)
+   # else:
+    langues = "English"
+    #if langues == "zh_CN":
+    #    trans = QtCore.QTranslator()
+     #   trans.load("zh_CN")
+     #   app.installTranslator(trans)
     movie = QMovie(":/img/1.gif")
     splash = MovieSplashScreen(movie)
     splash.show()
