@@ -84,7 +84,7 @@ def markov(data, ss, stage_index=0):
 def signal_extract(data, th=100, sam=100000, is_resam=False, re_sam=100000):
     """
     拟合多台阶电流数据，适用于长时间单分子捕获
-    数据输入：a：原始数据，单行或单列电流信号
+    数据输入：data：原始数据，单行或单列电流信号
              th, 最小电流台阶阈值,小于该值将合并为一个台阶
              sam, 数据采样率，默认为100K
              is_resam: 是否进行数据冲采样，适用于250K采样，信号分析结构较差时使用。
@@ -116,11 +116,11 @@ def signal_extract(data, th=100, sam=100000, is_resam=False, re_sam=100000):
     #    print(strftime("%m/%d/%Y %H:%M:%S"))
 
     temp2 = np.logical_or(np.abs(peak_current[1:-
-                                              1] -
+    1] -
                                  peak_current[0:-
-                                              2]) >= th, np.abs(peak_current[1:-
-                                                                             1] -
-                                                                peak_current[2:]) >= th)
+                                 2]) >= th, np.abs(peak_current[1:-
+    1] -
+                                                   peak_current[2:]) >= th)
     re_peak_time = peak_time[1:-1][temp2]
     re_peak_current = peak_current[1:-1][temp2]
 
@@ -133,6 +133,13 @@ def signal_extract(data, th=100, sam=100000, is_resam=False, re_sam=100000):
         re_peak_time = re_peak_time[~tq]
         re_peak_current = re_peak_current[~tq]
         tq = np.abs(re_peak_current[0:-1] - re_peak_current[1:]) < th
+    # 我也不知道当初写这个是干嘛的啦    
+
+    #    tq = np.abs(re_peak_current[0:-1] - re_peak_current[1:]) > th
+    #    while False in tq:
+    #        re_peak_time = re_peak_time[0:-1][tq]
+    #        re_peak_current = re_peak_current[0:-1][tq]
+    #        tq = np.abs(re_peak_current[0:-1] - re_peak_current[1:]) > th
 
     t1 = np.arange(len(peak_time))[np.in1d(peak_time, re_peak_time)]
     t1 += 1
@@ -143,6 +150,16 @@ def signal_extract(data, th=100, sam=100000, is_resam=False, re_sam=100000):
         return np.mean(peak_current[x:y])
 
     re_peak_current = np.array(list(map(foo, t2, t1)))
+    t3 = np.abs(re_peak_current[0:-1] - re_peak_current[1:]) < th
+
+    while True in t3:
+        for i in np.where(t3)[0]:
+            re_peak_current[i + 1] = (re_peak_current[i] * (t1[i] - t2[i]) + re_peak_current[i + 1] * (
+                    t1[i + 1] - t2[i + 1])) / ((t1[i] - t2[i]) + (t1[i + 1] - t2[i + 1]))
+        t3 = np.insert(t3, -1, 0)
+        re_peak_current = re_peak_current[~t3]
+        re_peak_time = re_peak_time[~t3]
+        t3 = np.abs(re_peak_current[0:-1] - re_peak_current[1:]) < th
 
     #    print('重构拟合曲线 1')
     #    print(strftime("%m/%d/%Y %H:%M:%S"))
@@ -162,7 +179,7 @@ def signal_extract(data, th=100, sam=100000, is_resam=False, re_sam=100000):
     #    print('数据分析完成')
     #    print(strftime("%m/%d/%Y %H:%M:%S"))
 
-    return data1.T, re_current,
+    return data1.T, re_current
 
 
 def signal_extract2(
@@ -216,11 +233,11 @@ def signal_extract2(
     print(strftime("%m/%d/%Y %H:%M:%S"))
 
     temp2 = np.logical_or(np.abs(peak_current[1:-
-                                              1] -
+    1] -
                                  peak_current[0:-
-                                              2]) >= th, np.abs(peak_current[1:-
-                                                                             1] -
-                                                                peak_current[2:]) >= th)
+                                 2]) >= th, np.abs(peak_current[1:-
+    1] -
+                                                   peak_current[2:]) >= th)
     re_peak_time = peak_time[1:-1][temp2]
     re_peak_current = peak_current[1:-1][temp2]
 
@@ -258,7 +275,7 @@ def signal_extract2(
                     temp4.append(peak_current[j])
                     j += 1
                 elif peak_current[j] < peak_th and abs(peak_current[j] - temp_base) > th / 3 and peak_current[
-                        j] > temp_base:
+                    j] > temp_base:
                     j += 1
                 else:
                     break
@@ -325,7 +342,7 @@ def signal_extract2(
                     temp4.append(peak_current[j])
                     j += 1
                 elif peak_current[j] > peak_th and abs(peak_current[j] - temp_base) > th / 3 and peak_current[
-                        j] < temp_base:
+                    j] < temp_base:
                     j += 1
                 else:
                     break
@@ -429,11 +446,11 @@ def signal_extract3(
     print(strftime("%m/%d/%Y %H:%M:%S"))
     # 筛选极值点，获取差值大于噪音的点。
     temp2 = np.logical_or(np.abs(peak_current[1:-
-                                              1] -
+    1] -
                                  peak_current[0:-
-                                              2]) >= th, np.abs(peak_current[1:-
-                                                                             1] -
-                                                                peak_current[2:]) >= th)
+                                 2]) >= th, np.abs(peak_current[1:-
+    1] -
+                                                   peak_current[2:]) >= th)
     re_peak_time = peak_time[1:-1][temp2]
     re_peak_current = peak_current[1:-1][temp2]
 
@@ -476,7 +493,8 @@ def signal_extract3(
                 if peak_current[j] > peak_th:
                     temp4.append(peak_current[j])
                     j += 1
-                elif peak_current[j] < peak_th and abs(peak_current[j] - temp_base) > th / 3 and peak_current[j] > temp_base:
+                elif peak_current[j] < peak_th and abs(peak_current[j] - temp_base) > th / 3 and peak_current[
+                    j] > temp_base:
                     j += 1
                 else:
                     break
@@ -539,8 +557,8 @@ def signal_extract3(
             #                #            res, idx = kmeans2(k2,k_num+1)
             #                #            value = max(res[:,1])
             else:
-                #value1 = np.mean(temp4)
-                #temp_time = (end_point - start_point) / sam*1000
+                # value1 = np.mean(temp4)
+                # temp_time = (end_point - start_point) / sam*1000
                 t4.append(np.mean(temp4))
                 data1[start_point + 1: end_point] = np.mean(temp4)
                 t5.append((end_point - start_point) / sam * 1000)
@@ -579,7 +597,7 @@ def signal_extract3(
                     temp4.append(peak_current[j])
                     j += 1
                 elif peak_current[j] > peak_th and abs(peak_current[j] - temp_base) > th / 3 and peak_current[
-                        j] < temp_base:
+                    j] < temp_base:
                     j += 1
                 else:
                     break
@@ -620,7 +638,7 @@ def signal_extract3(
                 t5.append((end_point - s_start) / sam * 1000)
                 data1[s_start:end_point] = np.mean(temp4[j:])
                 value1 = t4
-               #temp_time = t5
+                # temp_time = t5
 
                 charge = np.trapz(current[start_point:end_point], dx=1 / sam)
                 charge = temp_base * (end_point - start_point) / sam - charge
@@ -780,11 +798,11 @@ def collision_analy(
     #    print(strftime("%m/%d/%Y %H:%M:%S"))
 
     temp2 = np.logical_or(np.abs(peak_current[1:-
-                                              1] -
+    1] -
                                  peak_current[0:-
-                                              2]) >= th, np.abs(peak_current[1:-
-                                                                             1] -
-                                                                peak_current[2:]) >= th)
+                                 2]) >= th, np.abs(peak_current[1:-
+    1] -
+                                                   peak_current[2:]) >= th)
     re_peak_time = peak_time[1:-1][temp2]
     re_peak_current = peak_current[1:-1][temp2]
 
@@ -893,17 +911,44 @@ def collision_analy(
     return result, data1
 
 
-def signal_extract4(data, peak_th, th=100, sam=100000, ):
+def signal_extract4(
+        init_time,
+        data,
+        peak_th,
+        base,
+        th=100,
+        sam=100000,
+        re_sam=100000,
+        is_resam=False,
+        is_up=False):
     """
-    拟合多台阶电流数据，
-    数据输入：a：原始数据，单行或单列电流信号
-             th, 最小电流台阶阈值,小于该值将合并为一个台阶
-             time，信号最小时间
+    拟合单峰电流数据，
+    数据输入：data：原始数据，单行或单列电流信号
+             peak_th: 信号阈值
+             th, 基线噪音值，最小电流台阶阈值,小于该值将合并为一个台阶，
              sam, 数据采样率，默认为100K
-    数据输出：1：data1，散点数据，包含电流台阶和对应的时间
+             is_resam: 是否进行数据冲采样，适用于250K采样，信号分析结构较差时使用。
+                         使用重采样必须设置数据范围。
+             is_up: 是否为增强信号
+
+
+    数据输出：1：data1，散点数据，包含电流台阶和对应的时间，I/I0，基线，
+                        Delta I, 积分电荷，信号起始时间
              2：data2，重构的拟合曲线
     """
+
     current = np.array(data)
+    sam_temp = current.shape[0]
+    if is_resam and re_sam < sam:
+        print('信号重采样1')
+        #        print(strftime("%m/%d/%Y %H:%M:%S"))
+        current = resample(current, int(len(current) / (sam / re_sam)))
+        print('信号重采样2')
+        #        print(strftime("%m/%d/%Y %H:%M:%S"))
+        current = resample(current, sam_temp)
+    # print('信号重采样完成')
+    #        print(strftime("%m/%d/%Y %H:%M:%S"))
+
     time = np.arange(len(current))
     print('寻找极值点 1')
     print(strftime("%m/%d/%Y %H:%M:%S"))
@@ -917,84 +962,162 @@ def signal_extract4(data, peak_th, th=100, sam=100000, ):
     print(strftime("%m/%d/%Y %H:%M:%S"))
 
     temp2 = np.logical_or(np.abs(peak_current[1:-
-                                              1] -
+    1] -
                                  peak_current[0:-
-                                              2]) >= th, np.abs(peak_current[1:-
-                                                                             1] -
-                                                                peak_current[2:]) >= th)
+                                 2]) >= th, np.abs(peak_current[1:-
+    1] -
+                                                   peak_current[2:]) >= th)
     re_peak_time = peak_time[1:-1][temp2]
     re_peak_current = peak_current[1:-1][temp2]
 
-    # print('合并台阶')
-    # print(strftime("%m/%d/%Y %H:%M:%S"))
+    print('合并台阶')
+    print(strftime("%m/%d/%Y %H:%M:%S"))
 
-    # t1=np.arange(len(peak_time))[np.in1d(peak_time,re_peak_time)]
-    # t1+=1
-    # t2=np.insert(t1[0:-1],0,0)
-    # def foo(x,y):
-    #     nonlocal peak_current
-    #     return np.mean(peak_current[x:y])
-    # re_peak_current=np.array(list(map(foo,t2,t1)))
-
-    temp3 = peak_current < peak_th  # 信号阈值
-    signal_peak_time = peak_time[temp3]
-    signal_peak_current = peak_current[temp3]
-    t3 = np.arange(len(peak_time))[np.in1d(peak_time, signal_peak_time)]
+    t1 = np.arange(len(peak_time))[np.in1d(peak_time, re_peak_time)]
+    if is_up:
+        temp3 = re_peak_current > peak_th  # 信号阈值
+    else:
+        temp3 = re_peak_current < peak_th
+    signal_peak_time = re_peak_time[temp3]
+    signal_peak_current = re_peak_current[temp3]
+    t3 = np.arange(len(re_peak_time))[np.in1d(re_peak_time, signal_peak_time)]
 
     result = [[], [], [], [], [], [], []]
     start_point, end_point = 0, 0
     data1 = current
-    for index, value in enumerate(signal_peak_current):
+    if is_up:
+        for index, value in enumerate(signal_peak_current):
+            if start_point < signal_peak_time[index] < end_point:
+                continue
 
-        if start_point < peak_time[t3[index]] < end_point:
-            continue
-        if peak_time[t3[index]] - 250 < end_point:
-            pass
-        else:
-            temp_base = np.mean(
-                current[peak_time[t3[index]] - 250:peak_time[t3[index]] - 100])
-
-        k = t3[index] - 1
-
-        while abs(peak_current[k] - temp_base) > th / 5:
-            k -= 1
-        start_point = peak_time[k]
-        # print('寻找起始点%s' % index)
-        # print(strftime("%m/%d/%Y %H:%M:%S"))
-        temp4 = []
-        temp4.append(peak_current[t3[index]])
-
-        j = t3[index]
-        while j < len(peak_time):
-            if peak_current[j] < peak_th:
-                temp4.append(peak_current[j])
-                j += 1
-            elif peak_current[j] > peak_th and abs(peak_current[j] - temp_base) > th / 10:
-                j += 1
+            k = t1[t3[index]] - 1
+            while abs(peak_current[k] - base) > th / \
+                    3 and peak_current[k] > base:
+                k -= 1
+            start_point = peak_time[k]
+            temp_base = np.mean(peak_current[k - 5:k])
+            temp4 = []
+            temp4.append(value)
+            j = t1[t3[index]]
+            while j < len(peak_time):
+                if peak_current[j] > peak_th:
+                    temp4.append(peak_current[j])
+                    j += 1
+                elif peak_current[j] < peak_th and abs(peak_current[j] - temp_base) > th / 3 and peak_current[
+                    j] > temp_base:
+                    j += 1
+                else:
+                    break
             else:
-                break
+                j = -1
 
-        # print('寻找终止点%s' % index)
-        # print(strftime("%m/%d/%Y %H:%M:%S"))
-        if j >= len(peak_time):
-            j = -1
-        end_point = peak_time[j]
-        temp_time = (end_point - start_point) / sam
-        if len(temp4) < 20:
-            value = np.max(temp4)
-        else:
-            value = np.mean(temp4)
-        data1[start_point - 50:start_point + 1] = temp_base
-        data1[start_point + 1: end_point] = value
-        charge = np.trapz(current[start_point:end_point], dx=1 / sam)
-        charge = temp_base * temp_time - charge
-        result[0].append(value)  # 电流
-        result[1].append(temp_time * 1000)  # 时间
-        result[2].append(temp_base)  # 基线
-        result[3].append(value / temp_base)  # I/I0
-        result[4].append(temp_base - value)  # Delta I
-        result[5].append(charge)  # 积分电荷
-        result[6].append(start_point / sam * 1000)  # 信号起始时间
+            end_point = peak_time[j]
+            temp_time = (end_point - start_point) / sam
+            # value=np.mean(peak_current[t1[t3[index]-1]:t1[j]])
+            #        if len(temp4)>10:
+            #            value=np.mean(temp4)
+            #        else:
+            #            value=np.max(temp4)
+            temp4 = np.array(temp4)
+
+            # k_temp = abs(temp4[0:-1] - temp4[1:]) > th
+            # k_num = np.count_nonzero(k_temp)
+            #
+            # if k_num > 0:
+            #     t4 = []
+            #     j = 0
+            #     for i in np.argwhere(k_temp == 1).reshape(-1):
+            #         t4.append(np.mean(temp4[j:i + 1]))
+            #         j = i + 1
+            #         t4.append(np.mean(temp4[j:]))
+            #     value1 = np.mean(t4)
+            # #
+            # #
+            # #                #            k1 = np.arange(len(temp4),dtype='f')
+            # #                #            k2=np.array((k1,temp4)).T
+            # #                #            res, idx = kmeans2(k2,k_num+1)
+            # #                #            value = max(res[:,1])
+            # else:
+            #     value1 = np.mean(temp4)
+            value1 = np.mean(temp4)
+            data1[start_point - 30:start_point + 1] = temp_base
+            data1[start_point + 1: end_point] = value1
+            charge = np.trapz(current[start_point:end_point], dx=1 / sam)
+            charge = charge - temp_base * temp_time
+            result[0].append(value1)  # 电流
+            result[1].append(temp_time * 1000)  # 时间
+            result[2].append(value1 / temp_base)  # I/I0
+            result[3].append(temp_base)  # 基线
+            result[4].append(value1 - temp_base)  # Delta I
+            result[5].append(charge)  # 积分电荷
+            result[6].append(start_point / sam * 1000 + init_time)  # 信号起始时间
+
+    else:
+        for index, value in enumerate(signal_peak_current):
+            if start_point < signal_peak_time[index] < end_point:
+                continue
+
+            k = t1[t3[index]] - 1
+            while abs(peak_current[k] - base) > th / \
+                    3 and peak_current[k] < base:
+                k -= 1
+            start_point = peak_time[k]
+            temp_base = np.mean(peak_current[k - 5:k])
+            temp4 = []
+            temp4.append(value)
+            j = t1[t3[index]]
+            while j < len(peak_time):
+                if peak_current[j] < peak_th:
+                    temp4.append(peak_current[j])
+                    j += 1
+                elif peak_current[j] > peak_th and abs(peak_current[j] - temp_base) > th / 3 and peak_current[
+                    j] < temp_base:
+                    j += 1
+                else:
+                    break
+            else:
+                j = -1
+
+            end_point = peak_time[j]
+            temp_time = (end_point - start_point) / sam
+            # value=np.mean(peak_current[t1[t3[index]-1]:t1[j]])
+            #        if len(temp4)>10:
+            #            value=np.mean(temp4)
+            #        else:
+            #            value=np.max(temp4)
+            temp4 = np.array(temp4)
+
+            # k_temp = abs(temp4[0:-1] - temp4[1:]) > th
+            # k_num = np.count_nonzero(k_temp)
+
+            # if k_num > 0:
+            #     t4 = []
+            #     j = 0
+            #     for i in np.argwhere(k_temp == 1).reshape(-1):
+            #         t4.append(np.mean(temp4[j:i + 1]))
+            #         j = i + 1
+            #     t4.append(np.mean(temp4[j:]))
+            #     value1 = np.mean(t4)
+            #
+            #
+            #     #            k1 = np.arange(len(temp4),dtype='f')
+            #     #            k2=np.array((k1,temp4)).T
+            #     #            res, idx = kmeans2(k2,k_num+1)
+            #     #            value = max(res[:,1])
+            # else:
+            #     value1 = np.mean(temp4)
+            value1 = np.mean(temp4)
+            data1[start_point - 30:start_point + 1] = temp_base
+            data1[start_point + 1: end_point] = value1
+            charge = np.trapz(current[start_point:end_point], dx=1 / sam)
+            charge = temp_base * temp_time - charge
+            result[0].append(value1)  # 电流
+            result[1].append(temp_time * 1000)  # 时间
+            result[2].append(value1 / temp_base)  # I/I0
+            result[3].append(temp_base)  # 基线
+            result[4].append(temp_base - value1)  # Delta I
+            result[5].append(charge)  # 积分电荷
+            result[6].append(start_point / sam * 1000 + init_time)  # 信号起始时间
 
     result = np.array(result).T
     return result, data1

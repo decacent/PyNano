@@ -20,7 +20,6 @@
 
 '''
 
-
 import gc
 import os
 import sys
@@ -33,6 +32,7 @@ from PyQt5.QtGui import QPixmap, QMovie
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QSplashScreen, QDialog
 
 import matplotlib as mpl
+
 mpl.use('Qt5Agg')
 import numpy as np
 import scipy.io as sio
@@ -48,13 +48,13 @@ from tool.tool import Analy_tool
 from ui.pynano_ui import Ui_mainWindow
 from ui.input_par import Ui_Dialog
 from ui.about import Ui_about
-#from ui.languist import Ui_languist
+
+# from ui.languist import Ui_languist
 
 mpl.rcParams['agg.path.chunksize'] = 10000
 
 
 class Extract_1(QtCore.QThread):
-
     trigger = pyqtSignal(list)
 
     def __init__(
@@ -153,7 +153,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
     def __init__(self, langues, parent=None):
         super(Scat_analy, self).__init__(parent)
         self.setupUi(self)
-        #_translate = QtCore.QCoreApplication.translate
+        # _translate = QtCore.QCoreApplication.translate
         self.toolWindow = Analy_tool()
         self.verticalLayout_11.addWidget(self.toolWindow)
         self.version = 2.0
@@ -570,6 +570,11 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
             self.input_dialog.doubleSpinBox_endth.hide()
             self.input_dialog.spinBox_basenum.hide()
             self.input_dialog.spinBox_endnum.hide()
+        if self.comboBox.currentIndex() == 0:
+            self.input_dialog.doubleSpinBox_baseline.setEnabled(False)
+            self.input_dialog.radioButton_3.setEnabled(False)
+            self.input_dialog.radioButton_4.setEnabled(False)
+            self.input_dialog.doubleSpinBox_base.setEnabled(False)
         try:
             self.input_dialog.doubleSpinBox_th.setValue(self.th)
             self.input_dialog.doubleSpinBox_base.setValue(self.peak_th)
@@ -942,9 +947,9 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                     self.tr("No ΔI result"),
                     QMessageBox.Ok)
             self.ax2.scatter(self.extracted_signal[:,
-                                                   la],
+                             la],
                              self.extracted_signal[:,
-                                                   1],
+                             1],
                              marker='o',
                              color='b',
                              s=self.spinBox_6.value())
@@ -1150,7 +1155,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
 
     def next_view(self):
         # 部分预览数据
-        if  self.fn == '' and not self.is_read:
+        if self.fn == '' and not self.is_read:
             self.statusBar().showMessage(self.tr('No file loaded'))
             QMessageBox.information(
                 self,
@@ -1392,21 +1397,21 @@ if __name__ == '__main__':
     '''
     app = QApplication(sys.argv)
 
-   # if os.path.exists('a.ini'):
-     #   settings1 = QtCore.QSettings(r'a.ini', QtCore.QSettings.IniFormat)
+    # if os.path.exists('a.ini'):
+    #   settings1 = QtCore.QSettings(r'a.ini', QtCore.QSettings.IniFormat)
     #    settings1.beginGroup('window')
-   #     settings1.setIniCodec('UTF-8')
-   #     langues = settings1.value(r'language')
-        # if s1=='zh_CN':
-        #chinese = (s1=='zh_CN')
+    #     settings1.setIniCodec('UTF-8')
+    #     langues = settings1.value(r'language')
+    # if s1=='zh_CN':
+    # chinese = (s1=='zh_CN')
     #    print(langues)
 
-   # else:
+    # else:
     langues = "English"
-    #if langues == "zh_CN":
+    # if langues == "zh_CN":
     #    trans = QtCore.QTranslator()
-     #   trans.load("zh_CN")
-     #   app.installTranslator(trans)
+    #   trans.load("zh_CN")
+    #   app.installTranslator(trans)
     movie = QMovie(":/img/1.gif")
     splash = MovieSplashScreen(movie)
     splash.show()

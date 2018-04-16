@@ -238,7 +238,8 @@ class Abf_io():
                 b'clampex',
                 b'Clampex',
                 b'axoscope',
-                    b'Clampfit']:
+                b'Clampfit',
+                b'EDR3']:
                 #goodstart = big_string.lower().find(key)
                 goodstart = big_string.find(key)
                 if goodstart != -1:
