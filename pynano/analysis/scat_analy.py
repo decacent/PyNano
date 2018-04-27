@@ -148,7 +148,7 @@ def signal_extract(data, th=100, sam=100000, is_resam=False, re_sam=100000):
     def foo(x, y):
         nonlocal peak_current
         return np.mean(peak_current[x:y])
-
+        
     re_peak_current = np.array(list(map(foo, t2, t1)))
     t3 = np.abs(re_peak_current[0:-1] - re_peak_current[1:]) < th
 

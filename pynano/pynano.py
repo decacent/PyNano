@@ -156,7 +156,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         # _translate = QtCore.QCoreApplication.translate
         self.toolWindow = Analy_tool()
         self.verticalLayout_11.addWidget(self.toolWindow)
-        self.version = 2.0
+        self.version = 2.1
         self.language = langues
         self.comboBox.setCurrentIndex(2)
         # 初始化信号提取部分变量
