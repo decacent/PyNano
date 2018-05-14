@@ -126,15 +126,15 @@ QPushButton:hover, QPushButton:pressed , QPushButton:checked
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>30</x>
+     <x>10</x>
      <y>40</y>
-     <width>261</width>
-     <height>223</height>
+     <width>281</width>
+     <height>231</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="1">
-     <widget class="QSpinBox" name="spinBox_sam">
+    <item row="7" column="1">
+     <widget class="QSpinBox" name="spinBox_endnum">
       <property name="minimumSize">
        <size>
         <width>70</width>
@@ -148,15 +148,173 @@ QPushButton:hover, QPushButton:pressed , QPushButton:checked
        </size>
       </property>
       <property name="maximum">
-       <number>1000000</number>
+       <number>99999999</number>
       </property>
       <property name="value">
-       <number>100000</number>
+       <number>50</number>
       </property>
      </widget>
     </item>
-    <item row="1" column="0">
-     <widget class="QCheckBox" name="checkBox_resam">
+    <item row="6" column="0">
+     <widget class="QLabel" name="label_4">
+      <property name="minimumSize">
+       <size>
+        <width>100</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>100</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgba(52, 152, 219, 0);
+</string>
+      </property>
+      <property name="text">
+       <string>BaseLine Param</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QDoubleSpinBox" name="doubleSpinBox_base">
+      <property name="minimumSize">
+       <size>
+        <width>70</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>70</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="decimals">
+       <number>4</number>
+      </property>
+      <property name="minimum">
+       <double>-99999999999999991433150857216.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>100000000000000004764729344.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="1">
+     <widget class="QSpinBox" name="spinBox_basenum">
+      <property name="minimumSize">
+       <size>
+        <width>70</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>70</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="maximum">
+       <number>99999999</number>
+      </property>
+      <property name="value">
+       <number>500</number>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="label_2">
+      <property name="minimumSize">
+       <size>
+        <width>120</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>120</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgba(52, 152, 219, 0);
+</string>
+      </property>
+      <property name="text">
+       <string>Signal Threshold</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QDoubleSpinBox" name="doubleSpinBox_endth">
+      <property name="minimumSize">
+       <size>
+        <width>70</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>70</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="maximum">
+       <double>9999999999.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="0">
+     <widget class="QLabel" name="label_5">
+      <property name="minimumSize">
+       <size>
+        <width>100</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>100</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgba(52, 152, 219, 0);
+</string>
+      </property>
+      <property name="text">
+       <string>Terminal Param</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="label_3">
+      <property name="minimumSize">
+       <size>
+        <width>120</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>120</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgba(52, 152, 219, 0);
+</string>
+      </property>
+      <property name="text">
+       <string>Terminal Threshold</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QRadioButton" name="radioButton_4">
       <property name="minimumSize">
        <size>
         <width>90</width>
@@ -170,7 +328,26 @@ QPushButton:hover, QPushButton:pressed , QPushButton:checked
        </size>
       </property>
       <property name="text">
-       <string>resample</string>
+       <string>upwards</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QCheckBox" name="checkBox_resam">
+      <property name="minimumSize">
+       <size>
+        <width>105</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>105</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>LowPass Filter</string>
       </property>
      </widget>
     </item>
@@ -196,98 +373,113 @@ QPushButton:hover, QPushButton:pressed , QPushButton:checked
       </property>
      </widget>
     </item>
+    <item row="1" column="0">
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_cluster">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>50</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>70</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Cluster</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QSpinBox" name="spinBox_cluster">
+        <property name="minimumSize">
+         <size>
+          <width>50</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="value">
+         <number>2</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="1" column="1">
+     <layout class="QGridLayout" name="gridLayout_4">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_ksize">
+        <property name="minimumSize">
+         <size>
+          <width>50</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>k_size</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QSpinBox" name="spinBox_ksize">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>50</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="minimum">
+         <number>5</number>
+        </property>
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="singleStep">
+         <number>2</number>
+        </property>
+        <property name="value">
+         <number>51</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
     <item row="2" column="1">
-     <widget class="QDoubleSpinBox" name="doubleSpinBox_base">
-      <property name="minimumSize">
-       <size>
-        <width>70</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>70</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="decimals">
-       <number>4</number>
-      </property>
-      <property name="minimum">
-       <double>-99999999999999991433150857216.000000000000000</double>
-      </property>
-      <property name="maximum">
-       <double>100000000000000004764729344.000000000000000</double>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QLabel" name="label_2">
-      <property name="minimumSize">
-       <size>
-        <width>120</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>120</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: rgba(52, 152, 219, 0);
-</string>
-      </property>
-      <property name="text">
-       <string>Signal Threshold</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QRadioButton" name="radioButton_4">
-      <property name="minimumSize">
-       <size>
-        <width>90</width>
-        <height>30</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>90</width>
-        <height>30</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>upwards</string>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="0">
-     <widget class="QLabel" name="label_5">
-      <property name="minimumSize">
-       <size>
-        <width>100</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>100</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: rgba(52, 152, 219, 0);
-</string>
-      </property>
-      <property name="text">
-       <string>Terminal Param</string>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="1">
-     <widget class="QSpinBox" name="spinBox_endnum">
+     <widget class="QSpinBox" name="spinBox_sam">
       <property name="minimumSize">
        <size>
         <width>70</width>
@@ -301,97 +493,10 @@ QPushButton:hover, QPushButton:pressed , QPushButton:checked
        </size>
       </property>
       <property name="maximum">
-       <number>99999999</number>
+       <number>1000000</number>
       </property>
       <property name="value">
-       <number>50</number>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0">
-     <widget class="QLabel" name="label_3">
-      <property name="minimumSize">
-       <size>
-        <width>120</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>120</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: rgba(52, 152, 219, 0);
-</string>
-      </property>
-      <property name="text">
-       <string>Terminal Threshold</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="1">
-     <widget class="QDoubleSpinBox" name="doubleSpinBox_endth">
-      <property name="minimumSize">
-       <size>
-        <width>70</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>70</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="maximum">
-       <double>9999999999.000000000000000</double>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="1">
-     <widget class="QSpinBox" name="spinBox_basenum">
-      <property name="minimumSize">
-       <size>
-        <width>70</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>70</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="maximum">
-       <number>99999999</number>
-      </property>
-      <property name="value">
-       <number>500</number>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="0">
-     <widget class="QLabel" name="label_4">
-      <property name="minimumSize">
-       <size>
-        <width>100</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>100</width>
-        <height>25</height>
-       </size>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: rgba(52, 152, 219, 0);
-</string>
-      </property>
-      <property name="text">
-       <string>BaseLine Param</string>
+       <number>3000</number>
       </property>
      </widget>
     </item>
@@ -489,6 +594,15 @@ QPushButton:hover, QPushButton:pressed , QPushButton:checked
     </item>
    </layout>
   </widget>
+  <zorder>pushButton_2</zorder>
+  <zorder>pushButton</zorder>
+  <zorder>layoutWidget</zorder>
+  <zorder>layoutWidget</zorder>
+  <zorder>label_cluster</zorder>
+  <zorder>spinBox_cluster</zorder>
+  <zorder>label_ksize</zorder>
+  <zorder>spinBox_ksize</zorder>
+  <zorder>label_cluster</zorder>
  </widget>
  <resources>
   <include location="images.qrc"/>

@@ -3,11 +3,11 @@
 block_cipher = None
 
 
-a = Analysis(['pynano\\PyNano.py'],
+a = Analysis(['pynano\\pynano.py'],
              pathex=['E:\\Develop\\Python\\PyNano'],
              binaries=[],
              datas=[],
-             hiddenimports=[],
+             hiddenimports=['pynano/analysis'],
              hookspath=[],
              runtime_hooks=[],
              excludes=[],
@@ -19,7 +19,7 @@ pyz = PYZ(a.pure, a.zipped_data,
 exe = EXE(pyz,
           a.scripts,
           exclude_binaries=True,
-          name='PyNano',
+          name='pynano',
           debug=False,
           strip=False,
           upx=True,
@@ -30,4 +30,4 @@ coll = COLLECT(exe,
                a.datas,
                strip=False,
                upx=True,
-               name='PyNano')
+               name='pynano')
