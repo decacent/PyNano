@@ -23,7 +23,7 @@ from sklearn.cluster import DBSCAN
 from sklearn import metrics  
 from sklearn.datasets.samples_generator import make_blobs  
 from sklearn.preprocessing import StandardScaler
-from scipy.cluster.vq import kmeans, kmeans2
+#from scipy.cluster.vq import kmeans, kmeans2
 from axonio import  Abf_io
 from PyQt5.Qt import  QFileDialog
 from collections import OrderedDict
@@ -239,7 +239,6 @@ def signal_extract_cluster(
                 res,labels=res_temp[0],res_temp[1]
                 
             res=np.insert(res,0,temp_base)
-            res=np.insert(res,0,temp_base)
             result.append(res)
             data1[start_point - 30:start_point + 1] = temp_base
             for ix in range(n_cluster):
@@ -277,7 +276,7 @@ def signal_extract_cluster(
             
             data_s=np.array((time[start_point:end_point]/sam,
                              current[start_point:end_point])).T
-            res_temp=signal_cluster(data=data_s,fs=sam,cluster=2,kernel_size=51,th=th/2)
+            res_temp=signal_cluster(data=data_ s,fs=sam,cluster=2,kernel_size=51,th=th/2)
             
             if res_temp is None:
                 continue

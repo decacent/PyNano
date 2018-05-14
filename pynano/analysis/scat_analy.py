@@ -1033,7 +1033,7 @@ def collision_analy(
     return result, data1
 
 
-def signal_extract_cluster(
+def signal_extract_cluster(init_time,
         data,
         peak_th,
         base,
@@ -1043,7 +1043,7 @@ def signal_extract_cluster(
         kernel_size=51,
         is_up=False):
     """
-    拟合单峰电流数据，
+    聚类分析多台阶数据，
     数据输入：data：原始数据，单行或单列电流信号
              peak_th: 信号阈值
              th, 基线噪音值，最小电流台阶阈值,小于该值将合并为一个台阶，
@@ -1133,7 +1133,7 @@ def signal_extract_cluster(
             else:
                 res, labels = res_temp[0], res_temp[1]
 
-            res = np.insert(res, 0, temp_base)
+            res = np.insert(res, 0, start_point / sam * 1000 + init_time)
             res = np.insert(res, 0, temp_base)
             result.append(res)
             data1[start_point - 30:start_point + 1] = temp_base
@@ -1181,7 +1181,7 @@ def signal_extract_cluster(
                 data_temp.append(np.array((time[start_point:end_point] / 100000,
                                            current[start_point:end_point],
                                            labels)).T)
-
+            res = np.insert(res, 0, start_point / sam * 1000 + init_time)
             res = np.insert(res, 0, temp_base)
             result.append(res)
             data1[start_point - 30:start_point + 1] = temp_base

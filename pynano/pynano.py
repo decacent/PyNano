@@ -116,7 +116,7 @@ class Extract_1(QtCore.QThread):
                                                                        sam=self.sam, is_filter=self.is_filter,
                                                                        filter=self.filter, is_up=self.is_up)
             else:
-                self.extracted_signal, *self.fit_data = signal_extract_cluster(data=self.data,peak_th=self.peak_th, base=self.base,
+                self.extracted_signal, *self.fit_data = signal_extract_cluster(init_time=self.init_time, data=self.data,peak_th=self.peak_th, base=self.base,
                                                                        th = self.th,sam= self.sam, n_cluster= self.n_cluster,
                                                                        kernel_size= self.k_size, is_up= False
                                                                        )
@@ -710,8 +710,8 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
             path = QFileDialog.getSaveFileName(
                  self, self.tr('Save Result'), '', file_choices)
             head_index = np.shape(self.extracted_signal)[1]
-            heads='baseline'
-            for i in range(int((head_index-1)/2)):
+            heads='init_time,baseline'
+            for i in range(int((head_index-2)/2)):
                 heads += ',Current_{}'.format(i + 1) + ',Time_{}'.format(i + 1)
             self.statusBar().showMessage(
                     self.tr('Saved to %s' % path[0]))
