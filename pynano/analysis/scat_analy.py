@@ -1133,8 +1133,8 @@ def signal_extract_cluster(init_time,
             else:
                 res, labels = res_temp[0], res_temp[1]
 
-            res = np.insert(res, 0, start_point / sam * 1000 + init_time)
             res = np.insert(res, 0, temp_base)
+            res = np.insert(res, 0, start_point / sam * 1000 + init_time)
             result.append(res)
             data1[start_point - 30:start_point + 1] = temp_base
             for ix in range(n_cluster):
@@ -1181,8 +1181,8 @@ def signal_extract_cluster(init_time,
                 data_temp.append(np.array((time[start_point:end_point] / 100000,
                                            current[start_point:end_point],
                                            labels)).T)
-            res = np.insert(res, 0, start_point / sam * 1000 + init_time)
             res = np.insert(res, 0, temp_base)
+            res = np.insert(res, 0, start_point / sam * 1000 + init_time)
             result.append(res)
             data1[start_point - 30:start_point + 1] = temp_base
             for ix in range(n_cluster):
