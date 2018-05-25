@@ -123,7 +123,8 @@ class Extract_1(QtCore.QThread):
             self.is_success = True
             self.trigger.emit(
                 [self.extracted_signal, self.fit_data, self.is_success])
-        except BaseException:
+        except Exception as e:
+            print(e)
             self.extracted_signal = None
             self.fit_data = None
             self.is_success = False
@@ -888,7 +889,8 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                     self.widget.setEnabled(False)
                     self.extract1.trigger.connect(self.extract1_end)
                     self.extract1.start()
-                except BaseException:
+                except Exception as e:
+                    print(e)
                     QMessageBox.information(self, self.tr("Alert"), self.tr(
                         "Errors，please checkup the setup"), QMessageBox.Ok)
                     self.statusBar().showMessage(self.tr("Run extract failed"))
