@@ -961,7 +961,7 @@ def collision_analy(
                     temp6 = abs(np.mean(data[j:j + end_num]) - temp_base) > end_th and np.mean(
                         data[j:j + end_num]) < temp_base
                     if temp6:
-                        j += end_num
+                        j +=1
                 except BaseException:
                     temp7 = False
                     break
@@ -1004,7 +1004,7 @@ def collision_analy(
             temp7 = True
             while temp6:
                 try:
-                    temp6 = abs(np.mean(data[j:j + end_num]) - temp_base) > end_th and np.mean(
+                    temp6 = abs(np.mean(data[j:j + end_num]) - temp_base) >   and np.mean(
                         data[j:j + end_num]) > temp_base
                     if temp6:
                         j += end_num
