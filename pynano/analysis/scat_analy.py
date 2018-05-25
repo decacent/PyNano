@@ -970,7 +970,7 @@ def collision_analy(
             
             temp8 = np.mean(data[j:j + end_num]) < temp_base
             
-            end_point = j + np.where(temp8==True)[0] - 1
+            end_point = j + np.where(temp8==True)[0]
             temp4 = start_point
             temp5 = end_point
             temp_time = (end_point - re_peak_time[t1[index] - 1]) / sam
