@@ -372,7 +372,8 @@ def signal_extract2(
                     3 and peak_current[k] > base:
                 k -= 1
             start_point = peak_time[k]
-            temp_base = np.mean(peak_current[k - 5:k])
+            #temp_base = np.mean(peak_current[k - 5:k])
+            temp_base = np.mean(current[start_point - 100:start_point + 1])
             temp4 = []
             temp4.append(value)
             j = t1[t3[index]]
@@ -439,7 +440,8 @@ def signal_extract2(
                     3 and peak_current[k] < base:
                 k -= 1
             start_point = peak_time[k]
-            temp_base = np.mean(peak_current[k - 5:k])
+            #temp_base = np.mean(peak_current[k - 5:k])
+            temp_base = np.mean(current[start_point - 100:start_point + 1])
             temp4 = []
             temp4.append(value)
             j = t1[t3[index]]
@@ -499,30 +501,7 @@ def signal_extract2(
     result = np.array(result).T
     return result, data1
 
-def butter_lowpass(cutoff, fs, order=5):
-    nyq = 0.5 * fs
-    normal_cutoff = cutoff / nyq
-    b, a = butter(order, normal_cutoff, btype='low', analog=False)
-    return b, a
 
-def butter_lowpass_filter(data, cutoff, fs, order=5):
-    b, a = butter_lowpass(cutoff, fs, order=order)
-    y = lfilter(b, a, data)
-    return y
-
-def wavelet_denoising(data):
-    # 小波函数取db4
-    db4 = pywt.Wavelet('db8')
-    if data is not None:
-        # 分解
-        coeffs = pywt.wavedec(data, db4)
-        # 高频系数置零
-        coeffs[len(coeffs)-1] *= 0
-        coeffs[len(coeffs)-2] *= 0
-        # 重构
-        meta = pywt.waverec(coeffs, db4)
-        return meta
-    
 def signal_extract3(
         init_time,
         data,
@@ -552,7 +531,7 @@ def signal_extract3(
     current = np.array(data)
     current = wavelet_denoising(data)
     if is_filter:
-        current = butter_lowpass_filter(current, filter, 100000, 5) # 低通滤波
+        current = butter_lowpass_filter(current, filter, sam, 5) # 低通滤波
 
     time = np.arange(len(current))
     print('寻找极值点 1')
@@ -607,7 +586,8 @@ def signal_extract3(
                 ks += 1
                 k -= 1
             start_point = peak_time[k]
-            temp_base = np.mean(peak_current[k - 5:k])
+            #temp_base = np.mean(peak_current[k - 5:k])
+            temp_base = np.mean(current[start_point - 100:start_point + 1])
             temp4 = []
             temp4.append(value)
             j = t1[t3[index]]
@@ -710,7 +690,8 @@ def signal_extract3(
                 ks += 1
                 k -= 1
             start_point = peak_time[k]
-            temp_base = np.mean(peak_current[k - 5:k])
+            #temp_base = np.mean(peak_current[k - 5:k])
+            temp_base = np.mean(current[start_point - 100:start_point + 1])
             temp4 = []
             temp4.append(value)
             j = t1[t3[index]]
@@ -1117,7 +1098,8 @@ def signal_extract_cluster(init_time,
                     3 and peak_current[k] > base:
                 k -= 1
             start_point = peak_time[k]
-            temp_base = np.mean(peak_current[k - 5:k])
+            #temp_base = np.mean(peak_current[k - 5:k])
+            temp_base = np.mean(current[start_point - 100:start_point + 1])
             temp4 = []
             temp4.append(value)
             j = t1[t3[index]]
@@ -1162,7 +1144,8 @@ def signal_extract_cluster(init_time,
                     3 and peak_current[k] < base:
                 k -= 1
             start_point = peak_time[k]
-            temp_base = np.mean(peak_current[k - 5:k])
+            #temp_base = np.mean(peak_current[k - 5:k])
+            temp_base = np.mean(current[start_point - 100:start_point + 1])
             temp4 = []
             temp4.append(value)
             j = t1[t3[index]]
