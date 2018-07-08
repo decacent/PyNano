@@ -888,6 +888,7 @@ def collision_analy(
 
     data = np.array(data).reshape(-1, ).astype('f8')
     data1 = data
+    data = wavelet_denoising(data)
     time = np.arange(len(data))
     #    print('寻找极值点 1')
     #    print(strftime("%m/%d/%Y %H:%M:%S"))
