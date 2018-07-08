@@ -25,6 +25,7 @@ Supported : Read
 Author: sgarcia, jnowacki
 Modified : decacent
     Transfer from py2 to py3
+    only fit to abf > 2.0
 Note: j.s.nowacki@gmail.com has a C++ library with SWIG bindings which also
 reads abf files - would be good to cross-check
 
