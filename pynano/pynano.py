@@ -645,7 +645,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
 
     def about_help(self):
         QtGui.QDesktopServices.openUrl(
-            QtCore.QUrl('http://www.decacent.net/python/pynano'))
+            QtCore.QUrl('https://decacent.github.io/PyNano/'))
 
     def about_update(self):
         try:

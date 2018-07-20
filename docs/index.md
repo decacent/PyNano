@@ -50,7 +50,7 @@ If you can't do it. Please throw your mac laptop into trash and go back the fuck
 
 ## PyNano interface
 
-![ui1](E:\Develop\Python\PyNano\docs\ui1.png)
+![ui1](ui1.png)
 
 #### **Button function**
 
