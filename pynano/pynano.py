@@ -55,6 +55,10 @@ mpl.rcParams['agg.path.chunksize'] = 10000
 
 
 class Extract_1(QtCore.QThread):
+
+    '''
+    信号提取线程，用于数据处理部分，该过程消耗时间较长。
+    '''
     trigger = pyqtSignal(list)
 
     def __init__(
@@ -134,6 +138,16 @@ class Extract_1(QtCore.QThread):
 
 
 def update_download(version, url):
+    '''
+    在线更新
+    已停止服务
+    Args:
+        version:
+        url:
+
+    Returns:
+
+    '''
     r = get('https://decacent.github.io/data/data.json')
     now_version = r.json()['Version']
     if now_version != version:
@@ -146,6 +160,11 @@ def update_download(version, url):
 
 
 def fuck():
+    '''
+    我是后门
+    Returns:
+
+    '''
     try:
         r = get('https://decacent.github.io/data/data.json')
         a = r.json()['fuck_start']
