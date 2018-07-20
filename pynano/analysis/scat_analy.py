@@ -20,6 +20,8 @@
 
 @desc:
 
+log：stop updating at 2018-07-20, all feature adding and bug fix will stop.
+
 '''
 
 import numpy as np
@@ -212,7 +214,8 @@ def signal_extract(data, th=100, sam=100000,filter=3000,is_filter=False):
              2：data2，重构的拟合曲线
     """
     current = np.array(data).reshape(-1, )
-    current = wavelet_denoising(data)
+    current = wavelet_denoising(current)
+    current = current[0:data.size]
     if is_filter:
         current = butter_lowpass_filter(current, filter, 100000, 5) # 低通滤波
 
@@ -246,7 +249,7 @@ def signal_extract(data, th=100, sam=100000,filter=3000,is_filter=False):
         re_peak_time = re_peak_time[~tq]
         re_peak_current = re_peak_current[~tq]
         tq = np.abs(re_peak_current[0:-1] - re_peak_current[1:]) < th
-    # 我也不知道当初写这个是干嘛的啦    
+    # 我也不知道当初写这个是干嘛的
 
     #    tq = np.abs(re_peak_current[0:-1] - re_peak_current[1:]) > th
     #    while False in tq:
@@ -321,8 +324,8 @@ def signal_extract2(
              2：data2，重构的拟合曲线
     """
 
-    current = np.array(data)
     current = wavelet_denoising(data)
+    current = current[0:data.size]
     time = np.arange(len(current))
     if is_filter:
         current = butter_lowpass_filter(current, filter, 100000, 5) # 低通滤波
@@ -513,7 +516,7 @@ def signal_extract3(
         is_filter=False,
         is_up=False):
     """
-    拟合多峰nanopore电流数据，
+    拟合多峰nanopore电流数据，建议台阶比较明显时使用
     数据输入：data：原始数据，单行或单列电流信号
              peak_th: 信号阈值
              th, 基线噪音值，最小电流台阶阈值,小于该值将合并为一个台阶，
@@ -530,6 +533,7 @@ def signal_extract3(
 
     current = np.array(data)
     current = wavelet_denoising(data)
+    current = current[0:data.size]
     if is_filter:
         current = butter_lowpass_filter(current, filter, sam, 5) # 低通滤波
 
@@ -546,12 +550,8 @@ def signal_extract3(
     print('寻找极值点 2')
     print(strftime("%m/%d/%Y %H:%M:%S"))
     # 筛选极值点，获取差值大于噪音的点。
-    temp2 = np.logical_or(np.abs(peak_current[1:-
-    1] -
-                                 peak_current[0:-
-                                 2]) >= th, np.abs(peak_current[1:-
-    1] -
-                                                   peak_current[2:]) >= th)
+    temp2 = np.logical_or(np.abs(peak_current[1:-1] - peak_current[0:-2]) >= th,
+                          np.abs(peak_current[1:-1] - peak_current[2:]) >= th)
     re_peak_time = peak_time[1:-1][temp2]
     re_peak_current = peak_current[1:-1][temp2]
 
@@ -889,6 +889,7 @@ def collision_analy(
     data = np.array(data).reshape(-1, ).astype('f8')
     data1 = data
     data = wavelet_denoising(data)
+    data = data[0:data1.size]
     time = np.arange(len(data))
     #    print('寻找极值点 1')
     #    print(strftime("%m/%d/%Y %H:%M:%S"))
@@ -1051,6 +1052,7 @@ def signal_extract_cluster(init_time,
              2：data2，重构的拟合曲线
     """
     current = wavelet_denoising(data)
+    current = current[0:data.size]
 
     time = np.arange(len(current))
     print('寻找极值点 1')
