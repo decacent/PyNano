@@ -20,7 +20,9 @@
 
 @desc:
 
-log：stop updating at 2018-07-20, all feature adding and bug fix will stop.
+Notes：stop updating at 2018-07-20, all feature adding and bug fix will stop.
+
+You are not expected to understand this.
 
 '''
 
