@@ -46,7 +46,7 @@ Install the [git bash for windows](https://gitforwindows.org/).
 
 Just build the python development environment and run pynano.py 
 
-If you can't do it. Please throw your mac laptop into trash and go back the fuck windows.
+If you don‘t konw how to do it. Please throw your mac laptop into trash and go back the fuck windows.
 
 ## PyNano interface
 
@@ -96,7 +96,7 @@ read the .abf > 2.0 file.
 from pynano.analysis import axonio
 f = axonio.Abf_io('file_name')
 header =f.read_header()
-data = f,read_abf()
+data = f.read_abf()
 ```
 
 **Analysis**
