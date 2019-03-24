@@ -40,6 +40,7 @@ import numpy as np
 import scipy.io as sio
 from scipy import sparse
 from scipy.sparse.linalg import spsolve
+from requests import  get
 import matplotlib.pyplot as plt
 import analysis, ui, tool
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -697,7 +698,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
     def about_update(self):
         try:
             r = get('https://decacent.github.io/data/data.json')
-            new_version = r.json()['Version']
+            new_version = float(r.json()['Version'])
             if self.version < new_version:
                 QMessageBox.information(
                     self, self.tr("Update"), self.tr(
@@ -722,7 +723,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
     def init_update(self):
         try:
             r = get('https://decacent.github.io/data/data.json')
-            new_version = r.json()['Version']
+            new_version = float(r.json()['Version'])
             if self.version < new_version:
                 QMessageBox.information(
                     self, self.tr("Update"), self.tr(
