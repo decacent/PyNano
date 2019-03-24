@@ -38,6 +38,8 @@ import matplotlib as mpl
 mpl.use('Qt5Agg')
 import numpy as np
 import scipy.io as sio
+from scipy import sparse
+from scipy.sparse.linalg import spsolve
 import matplotlib.pyplot as plt
 import analysis, ui, tool
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -54,6 +56,8 @@ from ui.about import Ui_about
 # from ui.languist import Ui_languist
 
 mpl.rcParams['agg.path.chunksize'] = 10000
+
+
 
 
 class Extract_1(QtCore.QThread):
@@ -159,6 +163,33 @@ def update_download(version, url):
                 code.write(r.content)
         except BaseException:
             pass
+
+
+def error(func):
+    def wrapper(self, *args, **kwargs):
+        try:
+            u = func(self)
+            return u
+        except Exception as e:
+            QMessageBox.information(self, self.tr("Notice"), self.tr(e.args[0]), QMessageBox.Ok)
+    return wrapper
+
+def baselineflat(y, lamp=12, p=0.01, niter=10):
+    """
+    拉平基线
+    """
+    lam=10**lamp
+    L = len(y)
+    D = sparse.csc_matrix(np.diff(np.eye(L), 2))
+    w = np.ones(L)
+    z = 0
+    for i in range(niter):
+        W = sparse.spdiags(w, 0, L, L)
+        Z = W + lam * D.dot(D.transpose())
+        z = spsolve(Z, w * y)
+        w = p * (y > z) + (1 - p) * (y < z)
+    return z
+
 
 
 def fuck():
@@ -343,6 +374,8 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         self.comboBox_3.currentIndexChanged['int'].connect(
             self.plot_Scattering)
 
+
+
     def closeEvent(self, event):
         reply = QtWidgets.QMessageBox.question(
             self,
@@ -356,6 +389,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         else:
             event.ignore()
 
+    @error
     def set_writeini(self):
         pass
         setting = QtCore.QSettings('a.ini', QtCore.QSettings.IniFormat)
@@ -367,6 +401,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         setting.endGroup()
         return True
 
+    @error
     def all_hist(self):
         if not self.is_read:
             return None
@@ -425,6 +460,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
 
         sfreq.on_changed(update)
 
+    @error
     def widget_result(self):
         if self.widget_2s2.isHidden():
             self.widget_2.show()
@@ -437,6 +473,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
             self.widget_2s2.hide()
             self.widget_4.hide()
 
+    @error
     def widget_markov(self):
         if self.widget_4.isHidden():
             self.widget_2.show()
@@ -456,6 +493,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
             self.canvas3.draw()
             self.markov_stage.append(event.xdata)
 
+    @error
     def hist_refresh(self):
         if len(self.line) > 0:
             try:
@@ -468,6 +506,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         else:
             pass
 
+    @error
     def markov_analy(self):
         if self.is_extracted is False or not self.markov_ready:
             self.statusBar().showMessage(self.tr("No markov analysis result"))
@@ -499,6 +538,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                 QMessageBox.information(self, self.tr("Errors"), self.tr(
                     "Please setup the right parameters"), QMessageBox.Ok)
 
+    @error
     def markov_save(self):
         if not self.is_markov:
             self.statusBar().showMessage(self.tr("No markov analysis result"))
@@ -558,6 +598,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                 QMessageBox.Ok)
             pass
 
+    @error
     def plottable(self):
 
         if self.is_markov:
@@ -588,6 +629,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
             self.ax4.set_axis_off()
             self.canvas4.draw()
 
+    @error
     def child(self):
         self.statusBar().showMessage(self.tr('Setup the analysis parameters'))
         self.is_set = False
@@ -635,6 +677,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         self.input_dialog.pushButton_2.clicked.connect(self.APPclose)
         self.Dialog_p.exec_()
 
+    @error
     def child_about(self):
         self.about_dia = Ui_about()
         self.Dialog_d = QDialog(self)
@@ -645,10 +688,12 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         self.about_dia.about_update.clicked.connect(self.about_update)
         self.Dialog_d.exec_()
 
+    @error
     def about_help(self):
         QtGui.QDesktopServices.openUrl(
             QtCore.QUrl('https://decacent.github.io/PyNano/'))
 
+    @error
     def about_update(self):
         try:
             r = get('https://decacent.github.io/data/data.json')
@@ -673,6 +718,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                 self.tr("Internet connect error"),
                 QMessageBox.Ok)
 
+    @error
     def init_update(self):
         try:
             r = get('https://decacent.github.io/data/data.json')
@@ -690,9 +736,11 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         except BaseException:
             pass
 
+    @error
     def about_close(self):
         self.Dialog_d.close()
 
+    @error
     def get_param(self):
         self.th = self.input_dialog.doubleSpinBox_th.value()
         self.peak_th = self.input_dialog.doubleSpinBox_base.value()
@@ -708,15 +756,18 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         self.is_set = True
         self.Dialog_p.close()
 
+    @error
     def APPclose(self):
         self.is_set = False
         self.statusBar().showMessage(self.tr('Cancel anslysis'))
         self.Dialog_p.close()
 
+    @error
     def figure_init(self):
         self.ax1.cla()
         gc.collect()
 
+    @error
     def save_result(self):
         # 保存信号提取结果
         if self.extracted_signal is None:
@@ -805,6 +856,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
             self.statusBar().showMessage(self.tr('Save failed'))
             pass
 
+    @error
     def save_fig(self):
         pass
 
@@ -837,6 +889,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         else:
             pass
 
+    @error
     def extract(self):
         # 提取信号
         # if self.fn[0] == '' and self.data is None:
@@ -947,6 +1000,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                 "Errors，please checkup the setup"), QMessageBox.Ok)
             self.statusBar().showMessage(self.tr("Run extract failed"))
 
+    @error
     def viewsignal(self):
         # 预览拟合结果
         if self.is_extracted is False:
@@ -991,6 +1045,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
             self.is_view_signal = True
             self.is_partview = False
 
+    @error
     def plot_Scattering(self):
         # 绘制散点图
 
@@ -1036,6 +1091,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
             # self.ax2.set_ylim(0, 4)
             self.canvas2.draw()
 
+    @error
     def plot_currentHist(self):
         # 绘制电流Hist
         if self.is_extracted is False or self.comboBox.currentIndex() ==4:
@@ -1102,6 +1158,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                 self.canvas3.draw()
                 self.markov_stage = []
 
+    @error
     def loadabf(self):
 
         self.statusBar().showMessage(self.tr("Open file"))
@@ -1174,6 +1231,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                     self.tr("Fail load failed"),
                     QMessageBox.Ok)
 
+    @error
     def viewdata(self):
         if self.fn == '' and self.data is None:
             self.statusBar().showMessage(self.tr('No file loaded'))
@@ -1225,6 +1283,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
             self.is_partview = False
             self.is_view_signal = False
 
+    @error
     def next_view(self):
         # 部分预览数据
         if self.fn == '' and not self.is_read:
@@ -1273,6 +1332,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                     self.tr("Time range setup wrong"),
                     QMessageBox.Ok)
 
+    @error
     def previous_view(self):
         # 部分预览数据
         if self.fn == '' and not self.is_read:
@@ -1319,10 +1379,12 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                     self.tr("Time range setup wrong"),
                     QMessageBox.Ok)
 
+    @error
     def gap_refresh(self):
         self.gap_initime = self.spinBox_2.value()
         self.gaptime = self.spinBox.value()
 
+    @error
     def sweep_plot_next(self):
         self.sweep += 1
         if self.fn == '' and not self.is_read:
@@ -1383,6 +1445,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
             self.is_view = True
             self.is_view_signal = False
 
+    @error
     def sweep_plot_previous(self):
         self.sweep -= 1
         if self.fn == '' and not self.is_read:
@@ -1442,6 +1505,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
             self.is_view = True
             self.is_view_signal = False
 
+    @error
     def msg(self):
         reply = QMessageBox.information(self,  # 使用infomation信息框
                                         "Error",
