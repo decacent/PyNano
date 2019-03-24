@@ -4,7 +4,7 @@
     <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="ignoredPackages">
         <value>
-          <list size="175">
+          <list size="179">
             <item index="0" class="java.lang.String" itemvalue="PyQt5" />
             <item index="1" class="java.lang.String" itemvalue="scipy" />
             <item index="2" class="java.lang.String" itemvalue="matplotlib" />
@@ -180,6 +180,10 @@
             <item index="172" class="java.lang.String" itemvalue="jupyterlab-launcher" />
             <item index="173" class="java.lang.String" itemvalue="ply" />
             <item index="174" class="java.lang.String" itemvalue="openpyxl" />
+            <item index="175" class="java.lang.String" itemvalue="requests" />
+            <item index="176" class="java.lang.String" itemvalue="sympy" />
+            <item index="177" class="java.lang.String" itemvalue="scikit-learn" />
+            <item index="178" class="java.lang.String" itemvalue="PyWavelets" />
           </list>
         </value>
       </option>
