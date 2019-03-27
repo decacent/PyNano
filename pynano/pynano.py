@@ -40,12 +40,13 @@ import numpy as np
 import scipy.io as sio
 from scipy import sparse
 from scipy.sparse.linalg import spsolve
-from requests import  get
+from requests import get
 import matplotlib.pyplot as plt
 import analysis, ui, tool
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationToolbar
-from analysis.scat_analy import signal_extract, collision_analy, signal_extract2, markov, signal_extract3, signal_extract_cluster
+from analysis.scat_analy import signal_extract, collision_analy, signal_extract2, markov, signal_extract3, \
+    signal_extract_cluster
 from matplotlib.widgets import SpanSelector, Cursor, Slider
 from analysis.axonio import Abf_io
 from analysis.xdatio import Xdat_io
@@ -60,7 +61,6 @@ mpl.rcParams['agg.path.chunksize'] = 10000
 
 
 class Extract_1(QtCore.QThread):
-
     '''
     信号提取线程，用于数据处理部分，该过程消耗时间较长。
     '''
@@ -106,7 +106,7 @@ class Extract_1(QtCore.QThread):
         try:
             if self.model == 0:
                 self.extracted_signal, self.fit_data = signal_extract(
-                    self.data, th=self.th, sam=self.sam, is_filter=self.is_filter, filter =self.filter)
+                    self.data, th=self.th, sam=self.sam, is_filter=self.is_filter, filter=self.filter)
             elif self.model == 1:
                 self.extracted_signal, self.fit_data = collision_analy(data=self.data, th=self.th, sam=self.sam,
                                                                        end_th=self.endth, peak_th=self.peak_th,
@@ -125,10 +125,12 @@ class Extract_1(QtCore.QThread):
                                                                        sam=self.sam, is_filter=self.is_filter,
                                                                        filter=self.filter, is_up=self.is_up)
             else:
-                self.extracted_signal, *self.fit_data = signal_extract_cluster(init_time=self.init_time, data=self.data,peak_th=self.peak_th, base=self.base,
-                                                                       th = self.th,sam= self.sam, n_cluster= self.n_cluster,
-                                                                       kernel_size= self.k_size, is_up= False
-                                                                       )
+                self.extracted_signal, *self.fit_data = signal_extract_cluster(init_time=self.init_time, data=self.data,
+                                                                               peak_th=self.peak_th, base=self.base,
+                                                                               th=self.th, sam=self.sam,
+                                                                               n_cluster=self.n_cluster,
+                                                                               kernel_size=self.k_size, is_up=False
+                                                                               )
             self.is_success = True
             self.trigger.emit(
                 [self.extracted_signal, self.fit_data, self.is_success])
@@ -171,6 +173,7 @@ def error(func):
             return u
         except Exception as e:
             QMessageBox.information(self, self.tr("Notice"), self.tr(e.args[0]), QMessageBox.Ok)
+
     return wrapper
 
 
@@ -178,7 +181,7 @@ def baselineflat(y, lamp=12, p=0.01, niter=10):
     """
     拉平基线
     """
-    lam=10**lamp
+    lam = 10 ** lamp
     L = len(y)
     D = sparse.csc_matrix(np.diff(np.eye(L), 2))
     w = np.ones(L)
@@ -283,7 +286,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         # self.toolbar3.setMaximumWidth(400)
         self.verticalLayout_3.addWidget(self.toolbar3)
         self.verticalLayout_3.addWidget(self.canvas3)
-       # markov 概率表格图
+        # markov 概率表格图
         self.figure4 = plt.figure(4, facecolor='#f0f0f0')
         self.ax4 = self.figure4.add_subplot(111)
         self.figure4.subplots_adjust(left=0.14, right=0.95, top=0.97)
@@ -631,7 +634,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
             self.input_dialog.spinBox_basenum.hide()
             self.input_dialog.spinBox_endnum.hide()
 
-        if self.comboBox.currentIndex() !=4:
+        if self.comboBox.currentIndex() != 4:
             self.input_dialog.label_ksize.hide()
             self.input_dialog.label_cluster.hide()
             self.input_dialog.spinBox_ksize.hide()
@@ -688,7 +691,8 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
             if self.version < new_version:
                 QMessageBox.information(
                     self, self.tr("Update"), self.tr(
-                        "Version %s is available" %
+                        "Version %s is available\nPlease  execution command to update\ngit fetch --all && \
+                        git reset --hard origin/master && git pull" %
                         new_version), QMessageBox.Ok)
                 QtGui.QDesktopServices.openUrl(
                     QtCore.QUrl('https://github.com/decacent/PyNano/releases'))
@@ -713,7 +717,8 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
             if self.version < new_version:
                 QMessageBox.information(
                     self, self.tr("Update"), self.tr(
-                        "Version %s is available" %
+                        "Version %s is available\nPlease execution command to update\ngit fetch --all \
+                        && git reset --hard origin/master && git pull" %
                         new_version), QMessageBox.Ok)
                 QtGui.QDesktopServices.openUrl(
                     QtCore.QUrl('https://github.com/decacent/PyNano/releases'))
@@ -738,7 +743,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         self.is_filter = self.input_dialog.checkBox_resam.isChecked()
         self.filter = self.input_dialog.spinBox_sam.value()
         self.is_up = False if self.input_dialog.radioButton_3.isChecked() else True
-        self.n_cluster=self.input_dialog.spinBox_cluster.value()
+        self.n_cluster = self.input_dialog.spinBox_cluster.value()
         self.k_size = self.input_dialog.spinBox_ksize.value()
         self.is_set = True
         self.Dialog_p.close()
@@ -768,21 +773,20 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         if self.comboBox.currentIndex() == 4:
             file_choices = "CSV (*.csv);"
             path = QFileDialog.getSaveFileName(
-                 self, self.tr('Save Result'), '', file_choices)
+                self, self.tr('Save Result'), '', file_choices)
             head_index = np.shape(self.extracted_signal)[1]
-            heads='init_time,baseline'
-            for i in range(int((head_index-2)/2)):
+            heads = 'init_time,baseline'
+            for i in range(int((head_index - 2) / 2)):
                 heads += ',Current_{}'.format(i + 1) + ',Time_{}'.format(i + 1)
             self.statusBar().showMessage(
-                    self.tr('Saved to %s' % path[0]))
+                self.tr('Saved to %s' % path[0]))
             np.savetxt(
-                    path[0],
-                    self.extracted_signal,
-                    delimiter=',',
-                    header=heads)
+                path[0],
+                self.extracted_signal,
+                delimiter=',',
+                header=heads)
             self.statusBar().showMessage(self.tr('Save success'))
             return None
-
 
         file_choices = "CSV (*.csv);;mat (*.mat)"
         path = QFileDialog.getSaveFileName(
@@ -946,7 +950,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                         is_up=self.is_up,
                         n_cluster=self.n_cluster,
                         kernel_size=self.k_size
-                        )
+                    )
                     self.widget.setEnabled(False)
                     self.extract1.trigger.connect(self.extract1_end)
                     self.extract1.start()
@@ -1036,7 +1040,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
     def plot_Scattering(self):
         # 绘制散点图
 
-        if self.is_extracted is False or self.comboBox.currentIndex() ==4 :
+        if self.is_extracted is False or self.comboBox.currentIndex() == 4:
             self.statusBar().showMessage(self.tr("No result"))
             QMessageBox.information(
                 self,
@@ -1081,7 +1085,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
     @error
     def plot_currentHist(self):
         # 绘制电流Hist
-        if self.is_extracted is False or self.comboBox.currentIndex() ==4:
+        if self.is_extracted is False or self.comboBox.currentIndex() == 4:
             self.statusBar().showMessage(self.tr("No result"))
             QMessageBox.information(
                 self,
