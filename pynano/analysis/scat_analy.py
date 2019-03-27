@@ -645,16 +645,18 @@ def signal_extract3(
                 t5.append((end_point - s_start) / sam * 1000)
                 data1[s_start:end_point] = np.mean(temp4[j:])
                 value1 = np.array(t4)
-                ix = 0
-                while ix < len(t4) - 1:
-                    if abs(t4[ix] - t4[ix + 1]) < th:
-                        t4[ix] = (t4[ix] + t4[ix + 1]) / 2
-                        t5[ix] = t5[ix] + t5[ix + 1]
-                        t4.pop(ix + 1)
-                        t5.pop(ix + 1)
-                        ix = ix - 1
-                    ix = ix + 1
-
+                tq2= np.abs(np.asarray(t4[0:-1]) - np.asarray(t4[1:])) < th
+                while True in tq2:
+                    ix = 0
+                    while ix < len(t4) - 1:
+                        if abs(t4[ix] - t4[ix + 1]) < th:
+                            t4[ix] = (t4[ix]*t5[ix] + t4[ix + 1]*t5[ix + 1]) / (t5[ix] + t5[ix + 1])
+                            t5[ix] = t5[ix] + t5[ix + 1]
+                            t4.pop(ix + 1)
+                            t5.pop(ix + 1)
+                            ix = ix - 1
+                        ix = ix + 1
+                    tq2 = np.abs(np.asarray(t4[0:-1]) - np.asarray(t4[1:])) < th
                 value1 = t4
                 c = []
                 for jx in range(len(t4)):
@@ -764,16 +766,18 @@ def signal_extract3(
                 t5.append((end_point - s_start) / sam * 1000)
                 data1[s_start:end_point] = np.mean(temp4[j:])
                 # temp_time = t5
-                ix = 0
-                while ix < len(t4) - 1:
-                    if abs(t4[ix] - t4[ix + 1]) < th:
-                        t4[ix] = (t4[ix] + t4[ix + 1]) / 2
-                        t5[ix] = t5[ix] + t5[ix + 1]
-                        t4.pop(ix + 1)
-                        t5.pop(ix + 1)
-                        ix = ix - 1
-                    ix = ix + 1
-
+                tq2 = np.abs(np.asarray(t4[0:-1]) - np.asarray(t4[1:])) < th
+                while True in tq2:
+                    ix = 0
+                    while ix < len(t4) - 1:
+                        if abs(t4[ix] - t4[ix + 1]) < th:
+                            t4[ix] = (t4[ix]*t5[ix] + t4[ix + 1]*t5[ix + 1]) / (t5[ix] + t5[ix + 1])
+                            t5[ix] = t5[ix] + t5[ix + 1]
+                            t4.pop(ix + 1)
+                            t5.pop(ix + 1)
+                            ix = ix - 1
+                        ix = ix + 1
+                    tq2 = np.abs(np.asarray(t4[0:-1]) - np.asarray(t4[1:])) < th
                 value1 = t4
                 c = []
                 for jx in range(len(t4)):
