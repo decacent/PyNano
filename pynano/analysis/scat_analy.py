@@ -33,8 +33,8 @@ from time import strftime
 from itertools import groupby, chain
 
 from scipy.signal import butter, lfilter
-from sklearn.cluster import  KMeans, DBSCAN
-from scipy.signal import  medfilt
+from sklearn.cluster import KMeans, DBSCAN
+from scipy.signal import medfilt
 from sklearn.preprocessing import StandardScaler
 
 
@@ -149,6 +149,7 @@ def find_peaks(data):
     peak_time = time[1:-1][temp1]
     return np.array((peak_time, peak_current)).T
 
+
 def markov(data, ss, stage_index=0):
     """
     计算马尔科夫链转移概率
@@ -199,7 +200,7 @@ def markov(data, ss, stage_index=0):
     return t4
 
 
-def signal_extract(data, th=100, sam=100000,filter=3000,is_filter=False):
+def signal_extract(data, th=100, sam=100000, filter=3000, is_filter=False):
     """
     拟合多台阶电流数据，适用于长时间单分子捕获
     数据输入：data：原始数据，单行或单列电流信号
@@ -215,7 +216,7 @@ def signal_extract(data, th=100, sam=100000,filter=3000,is_filter=False):
     current = wavelet_denoising(current)
     current = current[0:data.size]
     if is_filter:
-        current = butter_lowpass_filter(current, filter, 100000, 5) # 低通滤波
+        current = butter_lowpass_filter(current, filter, 100000, 5)  # 低通滤波
 
     time = np.arange(len(current))
     #    print('寻找极值点 1')
@@ -262,7 +263,7 @@ def signal_extract(data, th=100, sam=100000,filter=3000,is_filter=False):
     def foo(x, y):
         nonlocal peak_current
         return np.mean(peak_current[x:y])
-        
+
     re_peak_current = np.array(list(map(foo, t2, t1)))
     t3 = np.abs(re_peak_current[0:-1] - re_peak_current[1:]) < th
 
@@ -326,7 +327,7 @@ def signal_extract2(
     current = current[0:data.size]
     time = np.arange(len(current))
     if is_filter:
-        current = butter_lowpass_filter(current, filter, 100000, 5) # 低通滤波
+        current = butter_lowpass_filter(current, filter, 100000, 5)  # 低通滤波
 
     print('寻找极值点 1')
     print(strftime("%m/%d/%Y %H:%M:%S"))
@@ -373,9 +374,10 @@ def signal_extract2(
                     3 and peak_current[k] > base:
                 k -= 1
             start_point = peak_time[k]
-            #temp_base = np.mean(peak_current[k - 5:k])
-            #temp_base = np.mean(current[start_point - 100:start_point + 1])
-            temp_base = np.mean(current[start_point - 100 if (start_point - 100) > end_point else end_point :start_point + 1])
+            # temp_base = np.mean(peak_current[k - 5:k])
+            # temp_base = np.mean(current[start_point - 100:start_point + 1])
+            temp_base = np.mean(
+                current[start_point - 100 if (start_point - 100) > end_point else end_point:start_point + 1])
             data1[start_point - 100 if (start_point - 100) > end_point else end_point:start_point + 1] = temp_base
             temp4 = []
             temp4.append(value)
@@ -421,7 +423,7 @@ def signal_extract2(
             # else:
             #     value1 = np.mean(temp4)
             value1 = np.mean(temp4)
-            #data1[start_point - 30:start_point + 1] = temp_base
+            # data1[start_point - 30:start_point + 1] = temp_base
             data1[start_point + 1: end_point] = value1
             charge = np.trapz(current[start_point:end_point], dx=1 / sam)
             charge = charge - temp_base * temp_time
@@ -443,9 +445,10 @@ def signal_extract2(
                     3 and peak_current[k] < base:
                 k -= 1
             start_point = peak_time[k]
-            #temp_base = np.mean(peak_current[k - 5:k])
-            #temp_base = np.mean(current[start_point - 100:start_point + 1])
-            temp_base = np.mean(current[start_point - 100 if (start_point - 100) > end_point else end_point :start_point + 1])
+            # temp_base = np.mean(peak_current[k - 5:k])
+            # temp_base = np.mean(current[start_point - 100:start_point + 1])
+            temp_base = np.mean(
+                current[start_point - 100 if (start_point - 100) > end_point else end_point:start_point + 1])
             data1[start_point - 100 if (start_point - 100) > end_point else end_point:start_point + 1] = temp_base
             temp4 = []
             temp4.append(value)
@@ -491,7 +494,7 @@ def signal_extract2(
             # else:
             #     value1 = np.mean(temp4)
             value1 = np.mean(temp4)
-#           data1[start_point - 30:start_point + 1] = temp_base
+            #           data1[start_point - 30:start_point + 1] = temp_base
             data1[start_point + 1: end_point] = value1
             charge = np.trapz(current[start_point:end_point], dx=1 / sam)
             charge = temp_base * temp_time - charge
@@ -537,7 +540,7 @@ def signal_extract3(
     current = wavelet_denoising(data)
     current = current[0:data.size]
     if is_filter:
-        current = butter_lowpass_filter(current, filter, sam, 5) # 低通滤波
+        current = butter_lowpass_filter(current, filter, sam, 5)  # 低通滤波
 
     time = np.arange(len(current))
     print('寻找极值点 1')
@@ -588,8 +591,9 @@ def signal_extract3(
                 ks += 1
                 k -= 1
             start_point = peak_time[k]
-            #temp_base = np.mean(peak_current[k - 5:k])
-            temp_base = np.mean(current[start_point - 100 if (start_point - 100) > end_point else end_point :start_point + 1])
+            # temp_base = np.mean(peak_current[k - 5:k])
+            temp_base = np.mean(
+                current[start_point - 100 if (start_point - 100) > end_point else end_point:start_point + 1])
             data1[start_point - 100 if (start_point - 100) > end_point else end_point:start_point + 1] = temp_base
             temp4 = []
             temp4.append(value)
@@ -614,7 +618,7 @@ def signal_extract3(
             #        else:
             #            value=np.max(temp4)
 
-            #data1[start_point - 30:start_point + 1] = temp_base
+            # data1[start_point - 30:start_point + 1] = temp_base
             temp4 = np.array(temp4)
 
             k_temp = abs(temp4[0:-1] - temp4[1:]) > th
@@ -641,22 +645,22 @@ def signal_extract3(
                 t5.append((end_point - s_start) / sam * 1000)
                 data1[s_start:end_point] = np.mean(temp4[j:])
                 value1 = np.array(t4)
-                ix=0
-                while ix < len(t4)-1:
-                    if abs(t4[ix]-t4[ix+1])<th:
-                        t4[ix]=(t4[ix]+t4[ix+1])/2
-                        t5[ix]=t5[ix]+t5[ix+1]
-                        t4.pop(ix+1)
-                        t5.pop(ix+1)
-                        ix=ix-1
-                    ix=ix+1
+                ix = 0
+                while ix < len(t4) - 1:
+                    if abs(t4[ix] - t4[ix + 1]) < th:
+                        t4[ix] = (t4[ix] + t4[ix + 1]) / 2
+                        t5[ix] = t5[ix] + t5[ix + 1]
+                        t4.pop(ix + 1)
+                        t5.pop(ix + 1)
+                        ix = ix - 1
+                    ix = ix + 1
 
                 value1 = t4
-                c=[]
+                c = []
                 for jx in range(len(t4)):
-                    c.append([t4[jx]]*int(round(t5[jx]/1000*sam)))
-                c=list(chain.from_iterable(c))
-                data1[start_point:start_point+len(c)]=c
+                    c.append([t4[jx]] * int(round(t5[jx] / 1000 * sam)))
+                c = list(chain.from_iterable(c))
+                data1[start_point:start_point + len(c)] = c
                 charge = np.trapz(current[start_point:end_point], dx=1 / sam)
                 charge = charge - temp_base * (end_point - start_point) / sam
 
@@ -707,8 +711,9 @@ def signal_extract3(
                 ks += 1
                 k -= 1
             start_point = peak_time[k]
-            #temp_base = np.mean(peak_current[k - 5:k])
-            temp_base = np.mean(current[start_point - 100 if (start_point - 100) > end_point else end_point :start_point + 1])
+            # temp_base = np.mean(peak_current[k - 5:k])
+            temp_base = np.mean(
+                current[start_point - 100 if (start_point - 100) > end_point else end_point:start_point + 1])
             data1[start_point - 100 if (start_point - 100) > end_point else end_point:start_point + 1] = temp_base
             temp4 = []
             temp4.append(value)
@@ -731,7 +736,7 @@ def signal_extract3(
             #            value=np.mean(temp4)
             #        else:
             #            value=np.max(temp4)
-            #data1[start_point - 30:start_point + 1] = temp_base
+            # data1[start_point - 30:start_point + 1] = temp_base
             temp4 = np.array(temp4)
 
             k_temp = abs(temp4[0:-1] - temp4[1:]) > th
@@ -759,28 +764,26 @@ def signal_extract3(
                 t5.append((end_point - s_start) / sam * 1000)
                 data1[s_start:end_point] = np.mean(temp4[j:])
                 # temp_time = t5
-                ix=0
-                while ix < len(t4)-1:
-                    if abs(t4[ix]-t4[ix+1])<th:
-                        t4[ix]=(t4[ix]+t4[ix+1])/2
-                        t5[ix]=t5[ix]+t5[ix+1]
-                        t4.pop(ix+1)
-                        t5.pop(ix+1)
-                        ix=ix-1
-                    ix=ix+1
+                ix = 0
+                while ix < len(t4) - 1:
+                    if abs(t4[ix] - t4[ix + 1]) < th:
+                        t4[ix] = (t4[ix] + t4[ix + 1]) / 2
+                        t5[ix] = t5[ix] + t5[ix + 1]
+                        t4.pop(ix + 1)
+                        t5.pop(ix + 1)
+                        ix = ix - 1
+                    ix = ix + 1
 
                 value1 = t4
-                c=[]
+                c = []
                 for jx in range(len(t4)):
-                    c.append([t4[jx]]*int(round(t5[jx]/1000*sam)))
-                c=list(chain.from_iterable(c))
-                data1[start_point:start_point+len(c)]=c
+                    c.append([t4[jx]] * int(round(t5[jx] / 1000 * sam)))
+                c = list(chain.from_iterable(c))
+                data1[start_point:start_point + len(c)] = c
                 charge = np.trapz(current[start_point:end_point], dx=1 / sam)
                 charge = temp_base * (end_point - start_point) / sam - charge
-                print(value1,type(value1))
                 result[0].append(list(t4))  # 电流
                 result[1].append(list(t5))  # 时间
-                print(temp_base,type(temp_base))
                 result[2].append(list((value1 / temp_base)))  # I/I0
                 result[3].append([temp_base] * len(t4))
                 result[4].append(list((value1 - temp_base)))  # Delta I
@@ -977,19 +980,19 @@ def collision_analy(
                     temp6 = abs(np.mean(data[j:j + end_num]) - temp_base) > end_th and np.mean(
                         data[j:j + end_num]) < temp_base
                     if temp6:
-                        j +=1
+                        j += 1
                 except BaseException:
                     temp7 = False
                     break
             if not temp7:
                 continue
-            
+
             temp8 = data[j:j + end_num] > temp_base
             if True in temp8:
-                end_point = j + int(np.where(temp8==True)[0][0])
+                end_point = j + int(np.where(temp8 == True)[0][0])
             else:
-                end_point = j + end_num 
-                
+                end_point = j + end_num
+
             temp4 = start_point
             temp5 = end_point
             temp_time = (end_point - re_peak_time[t1[index] - 1]) / sam
@@ -1023,7 +1026,7 @@ def collision_analy(
             temp7 = True
             while temp6:
                 try:
-                    temp6 = abs(np.mean(data[j:j + end_num]) - temp_base) >  end_th  and np.mean(
+                    temp6 = abs(np.mean(data[j:j + end_num]) - temp_base) > end_th and np.mean(
                         data[j:j + end_num]) > temp_base
                     if temp6:
                         j += 1
@@ -1032,12 +1035,12 @@ def collision_analy(
                     break
             if not temp7:
                 continue
-            
+
             temp8 = data[j:j + end_num] < temp_base
             if True in temp8:
-                end_point = j +  int(np.where(temp8==True)[0][0])
+                end_point = j + int(np.where(temp8 == True)[0][0])
             else:
-                end_point = j + end_num 
+                end_point = j + end_num
             temp4 = start_point
             temp5 = end_point
             temp_time = (end_point - re_peak_time[t1[index] - 1]) / sam
@@ -1061,14 +1064,14 @@ def collision_analy(
 
 
 def signal_extract_cluster(init_time,
-        data,
-        peak_th,
-        base,
-        th=100,
-        sam=100000,
-        n_cluster=2,
-        kernel_size=51,
-        is_up=False):
+                           data,
+                           peak_th,
+                           base,
+                           th=100,
+                           sam=100000,
+                           n_cluster=2,
+                           kernel_size=51,
+                           is_up=False):
     """
     聚类分析多台阶数据，
     数据输入：data：原始数据，单行或单列电流信号
@@ -1134,9 +1137,10 @@ def signal_extract_cluster(init_time,
                     3 and peak_current[k] > base:
                 k -= 1
             start_point = peak_time[k]
-            #temp_base = np.mean(peak_current[k - 5:k])
-            #temp_base = np.mean(current[start_point - 100:start_point + 1])
-            temp_base = np.mean(current[start_point - 100 if (start_point - 100) > end_point else end_point :start_point + 1])
+            # temp_base = np.mean(peak_current[k - 5:k])
+            # temp_base = np.mean(current[start_point - 100:start_point + 1])
+            temp_base = np.mean(
+                current[start_point - 100 if (start_point - 100) > end_point else end_point:start_point + 1])
             data1[start_point - 100 if (start_point - 100) > end_point else end_point:start_point + 1] = temp_base
             temp4 = []
             temp4.append(value)
@@ -1157,7 +1161,7 @@ def signal_extract_cluster(init_time,
 
             data_s = np.array((time[start_point:end_point] / sam,
                                current[start_point:end_point])).T
-            res_temp = signal_cluster(data=data_s, fs=sam, cluster=n_cluster, kernel_size=kernel_size, th= th / 2)
+            res_temp = signal_cluster(data=data_s, fs=sam, cluster=n_cluster, kernel_size=kernel_size, th=th / 2)
 
             if res_temp is None:
                 continue
@@ -1167,7 +1171,7 @@ def signal_extract_cluster(init_time,
             res = np.insert(res, 0, temp_base)
             res = np.insert(res, 0, start_point / sam * 1000 + init_time)
             result.append(res)
-            #data1[start_point - 30:start_point + 1] = temp_base
+            # data1[start_point - 30:start_point + 1] = temp_base
             for ix in range(n_cluster):
                 data1[start_point:end_point][labels == ix] = \
                     np.mean(data1[start_point:end_point][labels == ix])
@@ -1182,9 +1186,10 @@ def signal_extract_cluster(init_time,
                     3 and peak_current[k] < base:
                 k -= 1
             start_point = peak_time[k]
-            #temp_base = np.mean(peak_current[k - 5:k])
-            #temp_base = np.mean(current[start_point - 100:start_point + 1])
-            temp_base = np.mean(current[start_point - 100 if (start_point - 100) > end_point else end_point :start_point + 1])
+            # temp_base = np.mean(peak_current[k - 5:k])
+            # temp_base = np.mean(current[start_point - 100:start_point + 1])
+            temp_base = np.mean(
+                current[start_point - 100 if (start_point - 100) > end_point else end_point:start_point + 1])
             data1[start_point - 100 if (start_point - 100) > end_point else end_point:start_point + 1] = temp_base
             temp4 = []
             temp4.append(value)
@@ -1218,11 +1223,10 @@ def signal_extract_cluster(init_time,
             res = np.insert(res, 0, temp_base)
             res = np.insert(res, 0, start_point / sam * 1000 + init_time)
             result.append(res)
-#            data1[start_point - 30:start_point + 1] = temp_base
+            #            data1[start_point - 30:start_point + 1] = temp_base
             for ix in range(n_cluster):
                 data1[start_point:end_point][labels == ix] = \
                     np.mean(data1[start_point:end_point][labels == ix])
 
     result = np.array(result)
     return result, data1, data_temp
-
