@@ -59,8 +59,6 @@ from ui.about import Ui_about
 mpl.rcParams['agg.path.chunksize'] = 10000
 
 
-
-
 class Extract_1(QtCore.QThread):
 
     '''
@@ -155,7 +153,7 @@ def update_download(version, url):
     Returns:
 
     '''
-    r = get('https://decacent.github.io/data/data.json')
+    r = get('https://decacent.github.io/PyNano/data.json')
     now_version = r.json()['Version']
     if now_version != version:
         try:
@@ -175,6 +173,7 @@ def error(func):
             QMessageBox.information(self, self.tr("Notice"), self.tr(e.args[0]), QMessageBox.Ok)
     return wrapper
 
+
 def baselineflat(y, lamp=12, p=0.01, niter=10):
     """
     拉平基线
@@ -190,7 +189,6 @@ def baselineflat(y, lamp=12, p=0.01, niter=10):
         z = spsolve(Z, w * y)
         w = p * (y > z) + (1 - p) * (y < z)
     return z
-
 
 
 def fuck():
@@ -213,6 +211,7 @@ def fuck():
 
 
 class Scat_analy(QMainWindow, Ui_mainWindow):
+
     def __init__(self, langues, parent=None):
         super(Scat_analy, self).__init__(parent)
         self.setupUi(self)
@@ -233,13 +232,10 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         self.is_extracted = False  # 是否设置了部分提取
         self.sweep = 0  # 当前分析的sweep
         self.channel = 2  # abf 的通道数，即是否包含电压通道
-        # fuck()
         self.spinBox.setValue(10)
-
         self.is_part = False  # 是否部分提取
         self.markov_stage = []
         self.line = []
-
         # 设置初始态
         self.statusBar().showMessage("Ready")
         self.label_8.setText('0 mv')
@@ -247,7 +243,6 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         self.label_9.setAlignment(QtCore.Qt.AlignCenter)
         self.gaptime = self.spinBox.value()
         self.gap_initime = self.spinBox_2.value()
-
         # 添加signal 提取部分初始态
         self.is_view = False
         self.is_view_signal = False
@@ -255,7 +250,6 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         self.is_read = False
         self.is_markov = False
         self.markov_ready = False
-
         sizePolicy = QtWidgets.QSizePolicy(
             QtWidgets.QSizePolicy.Expanding,
             QtWidgets.QSizePolicy.Expanding)
@@ -267,7 +261,6 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         self.verticalLayout.addWidget(self.toolbar1)
         self.verticalLayout.addWidget(self.canvas1)
         self.canvas1.setSizePolicy(sizePolicy)
-
         sizePolicy = QtWidgets.QSizePolicy(
             QtWidgets.QSizePolicy.Preferred,
             QtWidgets.QSizePolicy.Preferred)
@@ -281,7 +274,6 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         self.verticalLayout_5.addWidget(self.toolbar2)
         self.verticalLayout_5.addWidget(self.canvas2)
         self.canvas2.setSizePolicy(sizePolicy)
-
         self.figure3 = plt.figure(3, facecolor='#f0f0f0')
         self.ax3 = self.figure3.add_subplot(111)
         self.figure3.subplots_adjust(top=0.90)
@@ -291,12 +283,10 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         # self.toolbar3.setMaximumWidth(400)
         self.verticalLayout_3.addWidget(self.toolbar3)
         self.verticalLayout_3.addWidget(self.canvas3)
-
-        # markov 概率表格图
+       # markov 概率表格图
         self.figure4 = plt.figure(4, facecolor='#f0f0f0')
         self.ax4 = self.figure4.add_subplot(111)
         self.figure4.subplots_adjust(left=0.14, right=0.95, top=0.97)
-
         self.ax4.set_axis_off()
         self.ax4.text(0.5, 0.5, 'Markov Chain', color='r',
                       fontsize=40, fontname=['Courier', 'DejaVu Sans Mono'],
@@ -304,13 +294,11 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                       verticalalignment='center',
                       transform=self.ax4.transAxes,
                       )
-
         self.canvas4 = FigureCanvas(self.figure4)
         # self.canvas4.setMaximumWidth(600)
         self.canvas4.setMinimumWidth(400)
         self.canvas4.setSizePolicy(sizePolicy)
         self.verticalLayout_7.addWidget(self.canvas4)
-
         # 初始化widget
         self.widget_2.hide()
         self.widget_2s1.hide()
@@ -342,7 +330,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         # self.previous_t1.clicked.connect(self.previous_view)
         # self.next_t1.clicked.connect(self.next_view)
         # self.part_view_init.clicked.connect(self.gap_refresh)
-        # 画布 事件
+        # 画布事件
         self.cid = self.figure1.canvas.mpl_connect(
             'button_press_event', self.onclick)  # 双击图片获取电压
         self.span = SpanSelector(
@@ -374,8 +362,6 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         self.spinBox_6.editingFinished.connect(self.plot_Scattering)
         self.comboBox_3.currentIndexChanged['int'].connect(
             self.plot_Scattering)
-
-
 
     def closeEvent(self, event):
         reply = QtWidgets.QMessageBox.question(
@@ -697,7 +683,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
     @error
     def about_update(self):
         try:
-            r = get('https://decacent.github.io/data/data.json')
+            r = get('https://decacent.github.io/PyNano/data.json')
             new_version = float(r.json()['Version'])
             if self.version < new_version:
                 QMessageBox.information(
@@ -705,7 +691,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                         "Version %s is available" %
                         new_version), QMessageBox.Ok)
                 QtGui.QDesktopServices.openUrl(
-                    QtCore.QUrl('https://sourceforge.net/projects/pynano/'))
+                    QtCore.QUrl('https://github.com/decacent/PyNano/releases'))
             else:
                 QMessageBox.information(
                     self,
@@ -722,7 +708,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
     @error
     def init_update(self):
         try:
-            r = get('https://decacent.github.io/data/data.json')
+            r = get('https://decacent.github.io/PyNano/data.json')
             new_version = float(r.json()['Version'])
             if self.version < new_version:
                 QMessageBox.information(
@@ -730,7 +716,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                         "Version %s is available" %
                         new_version), QMessageBox.Ok)
                 QtGui.QDesktopServices.openUrl(
-                    QtCore.QUrl('https://sourceforge.net/projects/pynano/'))
+                    QtCore.QUrl('https://github.com/decacent/PyNano/releases'))
             else:
                 pass
 
