@@ -1,6 +1,6 @@
 {
   "name": "PyNano",
-  "Version": "2.5",
+  "Version": "2.4",
   "requires": true,
-  "Feature": "Add the pointsalation method.\nFeature:\n    baseline automatic detection.\n    only for single step signal.\n    only for test"
+  "Feature": "Add the pointsalation method.\nFeature:\n    Baseline automatic detection.\n    Only for single step signal.\n    Only for test."
 }

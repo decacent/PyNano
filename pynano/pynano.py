@@ -713,30 +713,27 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
 
     @error
     def about_update(self):
-        try:
-            r = get('https://decacent.github.io/PyNano/data.json')
-            new_version = float(r.json()['Version'])
-            feature=r.json()['Feature']
-            if self.version < new_version:
-                QMessageBox.information(
-                    self, self.tr("Update"), self.tr(
-                        "Version %s is available\nPlease  execution command to update\n>> git fetch --all\n\
-                        >> git reset --hard origin/master\n>>git pull"+feature %
-                        new_version), QMessageBox.Ok)
-                QtGui.QDesktopServices.openUrl(
+        r = get('https://decacent.github.io/PyNano/data.json')
+        new_version = float(r.json()['Version'])
+        feature=r.json()['Feature']
+        if self.version < new_version:
+            QMessageBox.information(
+                self, self.tr("Update"), self.tr(
+                        "Version {}is available\nPlease  execution command to update\n>> git fetch --all \n>> git reset --hard origin/master\n>>git pull\n{}".format(new_version,feature)), QMessageBox.Ok)
+            QtGui.QDesktopServices.openUrl(
                     QtCore.QUrl('https://github.com/decacent/PyNano/releases'))
-            else:
-                QMessageBox.information(
-                    self,
-                    self.tr("Update"),
-                    self.tr("No update available"),
-                    QMessageBox.Ok)
-        except BaseException:
+        else:
             QMessageBox.information(
                 self,
                 self.tr("Update"),
-                self.tr("Internet connect error"),
+                self.tr("No update available"),
                 QMessageBox.Ok)
+        # except BaseException:
+        #     QMessageBox.information(
+        #         self,
+        #         self.tr("Update"),
+        #         self.tr("Internet connect error"),
+        #         QMessageBox.Ok)
 
     @error
     def init_update(self):
@@ -747,9 +744,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
             if self.version < new_version:
                 QMessageBox.information(
                     self, self.tr("Update"), self.tr(
-                        "Version %s is available\nPlease  execution command to update\n>> git fetch --all\n\
-                        >> git reset --hard origin/master\n>>git pull"+feature %
-                        new_version), QMessageBox.Ok)
+                        "Version {}is available\nPlease  execution command to update\n>> git fetch --all \n>> git reset --hard origin/master\n>>git pull\n{}".format(new_version,feature)), QMessageBox.Ok)
                 QtGui.QDesktopServices.openUrl(
                     QtCore.QUrl('https://github.com/decacent/PyNano/releases'))
             else:
