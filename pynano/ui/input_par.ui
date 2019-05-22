@@ -7,19 +7,19 @@
     <x>0</x>
     <y>0</y>
     <width>305</width>
-    <height>350</height>
+    <height>400</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>305</width>
-    <height>350</height>
+    <height>400</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>305</width>
-    <height>350</height>
+    <height>400</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -31,8 +31,8 @@
   <widget class="QPushButton" name="pushButton_2">
    <property name="geometry">
     <rect>
-     <x>165</x>
-     <y>270</y>
+     <x>160</x>
+     <y>320</y>
      <width>70</width>
      <height>70</height>
     </rect>
@@ -77,8 +77,8 @@ QPushButton:hover, QPushButton:pressed , QPushButton:checked
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>270</y>
+     <x>50</x>
+     <y>320</y>
      <width>70</width>
      <height>70</height>
     </rect>
@@ -127,7 +127,7 @@ QPushButton:hover, QPushButton:pressed , QPushButton:checked
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>40</y>
+     <y>70</y>
      <width>281</width>
      <height>231</height>
     </rect>
@@ -594,15 +594,47 @@ QPushButton:hover, QPushButton:pressed , QPushButton:checked
     </item>
    </layout>
   </widget>
-  <zorder>pushButton_2</zorder>
-  <zorder>pushButton</zorder>
-  <zorder>layoutWidget</zorder>
-  <zorder>layoutWidget</zorder>
-  <zorder>label_cluster</zorder>
-  <zorder>spinBox_cluster</zorder>
-  <zorder>label_ksize</zorder>
-  <zorder>spinBox_ksize</zorder>
-  <zorder>label_cluster</zorder>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>36</y>
+     <width>111</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QLabel" name="label_sigma">
+      <property name="text">
+       <string>Sigma</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QDoubleSpinBox" name="doubleSpinBox_sigma">
+      <property name="minimumSize">
+       <size>
+        <width>70</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>70</width>
+        <height>25</height>
+       </size>
+      </property>
+      <property name="decimals">
+       <number>1</number>
+      </property>
+      <property name="value">
+       <double>3.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
  </widget>
  <resources>
   <include location="images.qrc"/>

@@ -27,6 +27,7 @@ import os
 import sys
 import time
 from requests import get
+import traceback
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSignal
@@ -45,8 +46,9 @@ import matplotlib.pyplot as plt
 import analysis, ui, tool
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationToolbar
-from analysis.scat_analy import signal_extract, collision_analy, signal_extract2, markov, signal_extract3, \
-    signal_extract_cluster
+from analysis.scat_analy import signal_extract, collision_analy, markov, signal_extract3, \
+    signal_extract_cluster, signal_extract2, pointsaltation
+#from analysis.pointSaltation import signal_extract2
 from matplotlib.widgets import SpanSelector, Cursor, Slider
 from analysis.axonio import Abf_io
 from analysis.xdatio import Xdat_io
@@ -77,6 +79,7 @@ class Extract_1(QtCore.QThread):
             base_num,
             end_num,
             is_up,
+            sigma=3,
             th=100,
             sam=100000,
             filter=3000,
@@ -101,6 +104,7 @@ class Extract_1(QtCore.QThread):
         self.is_success = False
         self.n_cluster = n_cluster
         self.k_size = kernel_size
+        self.sigma = sigma
 
     def run(self):
         try:
@@ -124,13 +128,20 @@ class Extract_1(QtCore.QThread):
                                                                        th=self.th,
                                                                        sam=self.sam, is_filter=self.is_filter,
                                                                        filter=self.filter, is_up=self.is_up)
-            else:
+            elif self.model == 4:
                 self.extracted_signal, *self.fit_data = signal_extract_cluster(init_time=self.init_time, data=self.data,
                                                                                peak_th=self.peak_th, base=self.base,
                                                                                th=self.th, sam=self.sam,
                                                                                n_cluster=self.n_cluster,
                                                                                kernel_size=self.k_size, is_up=False
                                                                                )
+            else:
+                self.extracted_signal, self.fit_data = pointsaltation(init_time=self.init_time, data=self.data,
+                                                                               sigma=self.sigma,
+                                                                               sam=self.sam,
+                                                                               is_up=False
+                                                                               )
+
             self.is_success = True
             self.trigger.emit(
                 [self.extracted_signal, self.fit_data, self.is_success])
@@ -166,14 +177,13 @@ def update_download(version, url):
             pass
 
 
-def error(func):
+def error(func,**kwargs):
     def wrapper(self, *args, **kwargs):
         try:
-            u = func(self)
+            u = func(self,**kwargs)
             return u
         except Exception as e:
-            QMessageBox.information(self, self.tr("Notice"), self.tr(e.args[0]), QMessageBox.Ok)
-
+            QMessageBox.information(self, self.tr("Notice"), self.tr(traceback.format_exc()), QMessageBox.Ok)
     return wrapper
 
 
@@ -221,7 +231,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         # _translate = QtCore.QCoreApplication.translate
         self.toolWindow = Analy_tool()
         self.verticalLayout_11.addWidget(self.toolWindow)
-        self.version = 2.3
+        self.version = 2.4
         self.language = langues
         self.comboBox.setCurrentIndex(2)
         # 初始化信号提取部分变量
@@ -640,6 +650,24 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
             self.input_dialog.spinBox_ksize.hide()
             self.input_dialog.spinBox_cluster.hide()
 
+        if self.comboBox.currentIndex() != 5:
+            self.input_dialog.label_sigma.hide()
+            self.input_dialog.doubleSpinBox_sigma.hide()
+        
+        if self.comboBox.currentIndex() == 5:
+            self.input_dialog.doubleSpinBox_baseline.hide()
+            self.input_dialog.radioButton_3.hide()
+            self.input_dialog.radioButton_4.hide()
+            self.input_dialog.doubleSpinBox_base.hide()
+            self.input_dialog.spinBox_cluster.hide()
+            self.input_dialog.spinBox_ksize.hide()
+            self.input_dialog.label_ksize.hide()
+            self.input_dialog.label_cluster.hide()
+            self.input_dialog.doubleSpinBox_th.hide()
+            self.input_dialog.label_2.hide()
+            self.input_dialog.label.hide()
+            self.input_dialog.label_1.hide()
+
         if self.comboBox.currentIndex() == 0:
             self.input_dialog.doubleSpinBox_baseline.setEnabled(False)
             self.input_dialog.radioButton_3.setEnabled(False)
@@ -688,11 +716,12 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         try:
             r = get('https://decacent.github.io/PyNano/data.json')
             new_version = float(r.json()['Version'])
+            feature=r.json()['Feature']
             if self.version < new_version:
                 QMessageBox.information(
                     self, self.tr("Update"), self.tr(
                         "Version %s is available\nPlease  execution command to update\ngit fetch --all && \
-                        git reset --hard origin/master && git pull" %
+                        git reset --hard origin/master && git pull"+feature %
                         new_version), QMessageBox.Ok)
                 QtGui.QDesktopServices.openUrl(
                     QtCore.QUrl('https://github.com/decacent/PyNano/releases'))
@@ -714,11 +743,12 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         try:
             r = get('https://decacent.github.io/PyNano/data.json')
             new_version = float(r.json()['Version'])
+            feature=r.json()['Feature']
             if self.version < new_version:
                 QMessageBox.information(
                     self, self.tr("Update"), self.tr(
                         "Version %s is available\nPlease execution command to update\ngit fetch --all \
-                        && git reset --hard origin/master && git pull" %
+                        && git reset --hard origin/master && git pull"+feature %
                         new_version), QMessageBox.Ok)
                 QtGui.QDesktopServices.openUrl(
                     QtCore.QUrl('https://github.com/decacent/PyNano/releases'))
@@ -746,6 +776,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         self.n_cluster = self.input_dialog.spinBox_cluster.value()
         self.k_size = self.input_dialog.spinBox_ksize.value()
         self.is_set = True
+        self.sigma=self.input_dialog.doubleSpinBox_sigma.value()
         self.Dialog_p.close()
 
     @error
@@ -902,7 +933,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
             #         "Resampling need set time range"), QMessageBox.Ok)
             #     return None
 
-            if self.th == 0 or not self.is_set:
+            if self.comboBox.currentIndex() != 5 and (self.th == 0 or not self.is_set):
                 QMessageBox.information(self, self.tr("Warning"), self.tr(
                     "Please setup the threshold"), QMessageBox.Ok)
                 pass
@@ -944,6 +975,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                         base_num=self.base_num,
                         end_num=self.end_num,
                         th=self.th,
+                        sigma=self.sigma,
                         sam=self.sam,
                         is_filter=self.is_filter,
                         filter=self.filter,
@@ -959,7 +991,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                     QMessageBox.information(self, self.tr("Alert"), self.tr(
                         "Errors，please checkup the setup"), QMessageBox.Ok)
                     self.statusBar().showMessage(self.tr("Run extract failed"))
-
+    
     def extract1_end(self, ls):
         if ls[2]:
             self.extracted_signal = ls[0]

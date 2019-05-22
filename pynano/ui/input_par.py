@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'input_par.ui'
+# Form implementation generated from reading ui file '.\input_par.ui'
 #
-# Created by: PyQt5 UI code generator 5.6
+# Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -11,12 +11,12 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(305, 350)
-        Dialog.setMinimumSize(QtCore.QSize(305, 350))
-        Dialog.setMaximumSize(QtCore.QSize(305, 350))
+        Dialog.resize(305, 400)
+        Dialog.setMinimumSize(QtCore.QSize(305, 400))
+        Dialog.setMaximumSize(QtCore.QSize(305, 400))
         Dialog.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
         self.pushButton_2 = QtWidgets.QPushButton(Dialog)
-        self.pushButton_2.setGeometry(QtCore.QRect(165, 270, 70, 70))
+        self.pushButton_2.setGeometry(QtCore.QRect(160, 320, 70, 70))
         self.pushButton_2.setMinimumSize(QtCore.QSize(70, 70))
         self.pushButton_2.setMaximumSize(QtCore.QSize(70, 70))
         self.pushButton_2.setStyleSheet("QPushButton\n"
@@ -41,7 +41,7 @@ class Ui_Dialog(object):
         self.pushButton_2.setText("")
         self.pushButton_2.setObjectName("pushButton_2")
         self.pushButton = QtWidgets.QPushButton(Dialog)
-        self.pushButton.setGeometry(QtCore.QRect(60, 270, 70, 70))
+        self.pushButton.setGeometry(QtCore.QRect(50, 320, 70, 70))
         self.pushButton.setMinimumSize(QtCore.QSize(70, 70))
         self.pushButton.setMaximumSize(QtCore.QSize(70, 70))
         self.pushButton.setStyleSheet("QPushButton\n"
@@ -69,7 +69,7 @@ class Ui_Dialog(object):
         self.pushButton.setText("")
         self.pushButton.setObjectName("pushButton")
         self.layoutWidget = QtWidgets.QWidget(Dialog)
-        self.layoutWidget.setGeometry(QtCore.QRect(10, 40, 281, 231))
+        self.layoutWidget.setGeometry(QtCore.QRect(10, 70, 281, 231))
         self.layoutWidget.setObjectName("layoutWidget")
         self.gridLayout = QtWidgets.QGridLayout(self.layoutWidget)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
@@ -190,7 +190,7 @@ class Ui_Dialog(object):
         self.spinBox_sam = QtWidgets.QSpinBox(self.layoutWidget)
         self.spinBox_sam.setMinimumSize(QtCore.QSize(70, 25))
         self.spinBox_sam.setMaximumSize(QtCore.QSize(70, 25))
-        self.spinBox_sam.setMaximum(100000)
+        self.spinBox_sam.setMaximum(1000000)
         self.spinBox_sam.setProperty("value", 3000)
         self.spinBox_sam.setObjectName("spinBox_sam")
         self.gridLayout.addWidget(self.spinBox_sam, 2, 1, 1, 1)
@@ -226,15 +226,22 @@ class Ui_Dialog(object):
         self.doubleSpinBox_th.setMaximum(100000000.0)
         self.doubleSpinBox_th.setObjectName("doubleSpinBox_th")
         self.gridLayout_2.addWidget(self.doubleSpinBox_th, 0, 3, 1, 1)
-        self.pushButton_2.raise_()
-        self.pushButton.raise_()
-        self.layoutWidget.raise_()
-        self.layoutWidget.raise_()
-        self.label_cluster.raise_()
-        self.spinBox_cluster.raise_()
-        self.label_ksize.raise_()
-        self.spinBox_ksize.raise_()
-        self.label_cluster.raise_()
+        self.widget = QtWidgets.QWidget(Dialog)
+        self.widget.setGeometry(QtCore.QRect(100, 36, 111, 31))
+        self.widget.setObjectName("widget")
+        self.horizontalLayout = QtWidgets.QHBoxLayout(self.widget)
+        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.label_sigma = QtWidgets.QLabel(self.widget)
+        self.label_sigma.setObjectName("label_sigma")
+        self.horizontalLayout.addWidget(self.label_sigma)
+        self.doubleSpinBox_sigma = QtWidgets.QDoubleSpinBox(self.widget)
+        self.doubleSpinBox_sigma.setMinimumSize(QtCore.QSize(70, 25))
+        self.doubleSpinBox_sigma.setMaximumSize(QtCore.QSize(70, 25))
+        self.doubleSpinBox_sigma.setDecimals(1)
+        self.doubleSpinBox_sigma.setProperty("value", 3.0)
+        self.doubleSpinBox_sigma.setObjectName("doubleSpinBox_sigma")
+        self.horizontalLayout.addWidget(self.doubleSpinBox_sigma)
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
@@ -253,5 +260,6 @@ class Ui_Dialog(object):
         self.label_ksize.setText(_translate("Dialog", "k_size"))
         self.label_1.setText(_translate("Dialog", "<html><head/><body><p align=\"center\">Noise(RMS)</p></body></html>"))
         self.label.setText(_translate("Dialog", "BaseLine"))
+        self.label_sigma.setText(_translate("Dialog", "Sigma"))
 
 import ui.images

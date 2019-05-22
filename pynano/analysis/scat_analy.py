@@ -1106,12 +1106,10 @@ def signal_extract_cluster(init_time,
     print('寻找极值点 2')
     print(strftime("%m/%d/%Y %H:%M:%S"))
 
-    temp2 = np.logical_or(np.abs(peak_current[1:-
-    1] -
-                                 peak_current[0:-
-                                 2]) >= th, np.abs(peak_current[1:-
-    1] -
-                                                   peak_current[2:]) >= th)
+    temp2 = np.logical_or(np.abs(peak_current[1:-1] -
+                                 peak_current[0:-2]) >= th, 
+                                 np.abs(peak_current[1:-1] -
+                                 peak_current[2:]) >= th)
     re_peak_time = peak_time[1:-1][temp2]
     re_peak_current = peak_current[1:-1][temp2]
 
@@ -1234,3 +1232,119 @@ def signal_extract_cluster(init_time,
 
     result = np.array(result)
     return result, data1, data_temp
+
+def pointsaltation(
+        init_time,
+        data,
+        sigma=3,
+        sam=100000,
+        filter=3000,
+        is_filter=False,
+        is_up=False):
+    """
+    拟合单峰电流数据，全自动
+    数据输入：data：原始数据，单行或单列电流信号, ndarray
+             sam, 数据采样率，默认为100K
+             is_up: 是否为增强信号
+             sigma: 信号波动判断标准，默认3倍RMS
+
+
+    数据输出：1：result，散点数据，包含电流台阶和对应的时间，I/I0，基线，
+                        Delta I, 积分电荷，信号起始时间
+             2：data1，重构的拟合曲线
+    """
+    current = np.array(data).reshape(-1, )
+    current = wavelet_denoising(data) # 小波降噪消除噪音
+    current = current[0:data.size]    # 小波降噪偶尔导致数组大小增加或减小1.
+    time = np.arange(len(current))    # 生成时间序列用以记录位置
+    # 是否对数据进行低通滤波
+    if is_filter:
+        current = butter_lowpass_filter(current, filter, 100000, 5)  # 低通滤波
+    # 寻找数据的所有极值点
+    temp1 = np.logical_or(np.logical_and(current[0:-2] <= current[1:-1],
+                                         current[1:-1] >= current[2:]),
+                          np.logical_and(current[0:-2] >= current[1:-1],
+                                         current[1:-1] <= current[2:]))
+    # 获取极值点的索引和值
+    peak_current = current[1:-1][temp1]
+    peak_time = time[1:-1][temp1]
+    # 计算极值点的离散差值
+    temp2=np.diff(peak_current)
+    # 计算方差和和获取信号波动参数,相比较于使用原始信号计算方差，可以减小基线漂移导致的误差
+    sigma = sigma*np.std(temp2)
+    # 获取波动大的极值点的索引和值,标记为 rePoint
+    result = [[], [], [], [], [], [], []]
+    start_point, end_point = 0, 0
+    data1 = np.copy(current)
+    if is_up:
+        pass
+    else:
+        #可能的起始点
+        temp3=np.logical_and(np.abs(temp2) > sigma,temp2 < 0)
+        start_peak_time = peak_time[0:-1][temp3]
+        start_peak_current = peak_current[0:-1][temp3]
+        #可能的终止点
+        temp4=np.logical_and(temp2 > sigma,temp2 > 0)
+        #end_peak_time = peak_time[1:][temp4]
+        #end_peak_current = peak_current[1:][temp4]
+        # rePoint在所有极值点中的索引
+        t1 = np.arange(len(peak_time))[np.in1d(peak_time, start_peak_time)]
+        #t2 = np.arange(len(peak_time))[np.in1d(peak_time, end_peak_time)]
+        # 循环取信号
+        end_index = 0 
+        for index, _ in enumerate(start_peak_current):
+            if start_point <start_peak_time[index] < end_point:
+                continue
+            start_point = start_peak_time[index]
+            baseline_temp = np.mean(
+                current[start_point - 100 if (start_point - 100) > end_point else end_point:start_point + 1])
+            data1[start_point - 100 if (start_point - 100) > end_point else end_point:start_point+1] = baseline_temp
+            signal_therhold = baseline_temp - sigma
+            #temp4.append(value)
+            #j = t1[index]+1
+            # while True:
+            #     if  end_index<len(end_peak_time)-1 and end_peak_time[end_index] < start_point:
+            #         end_index += 1
+            #     else:
+            #         if  end_index<len(end_peak_time)-1 and end_peak_current[end_index] < signal_therhold:
+            #             end_index += 1
+            #         else:
+            #             break
+            # end_point =  end_peak_time[end_index]
+            temp4 = []
+            j = t1[index]+1
+            signal_start = peak_time[j]
+            while j < len(peak_time):
+                if peak_current[j] < signal_therhold:
+                    temp4.append(peak_current[j])
+                    j += 1
+                elif peak_current[j] > signal_therhold and abs(peak_current[j] - baseline_temp) > sigma / 3 and peak_current[
+                    j] < baseline_temp:
+                    signal_end = peak_time[j-1]
+                    j += 1
+                else:
+                    signal_end = peak_time[j-1]
+                    break
+            else:
+                j = -1
+
+            end_point = peak_time[j]
+            signal_time = (end_point - start_point) / sam
+            # temp5=peak_current[(t1[index]+1):t2[end_index]]
+            # if len(temp5)==0:
+            #     continue
+            value1=np.mean(current[signal_start:signal_end+1])
+            end_index += 1
+            data1[start_point + 1:end_point] = value1
+            charge = np.trapz(current[start_point:end_point], dx=1 / sam)
+            charge = baseline_temp * signal_time - charge
+            result[0].append(value1)  # 电流
+            result[1].append(signal_time * 1000)  # 时间
+            result[2].append(value1 / baseline_temp)  # I/I0
+            result[3].append(baseline_temp)  # 基线
+            result[4].append(baseline_temp - value1)  # Delta I
+            result[5].append(charge)  # 积分电荷
+            result[6].append(start_point / sam * 1000 + init_time)  # 信号起始时间
+
+    result = np.array(result).T
+    return result, data1
