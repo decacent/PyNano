@@ -164,7 +164,7 @@ class Ui_about(object):
         self.label_5.setText(
             _translate(
                 "about",
-                "<html><head/><body><p align=\"center\">Copyright (C) 2018 Decacent </p></body></html>"))
+                "<html><head/><body><p align=\"center\">Copyright (C) 2019 Decacent </p></body></html>"))
         self.about_update.setText(_translate("about", "Updata"))
         self.about_help.setText(_translate("about", "Help"))
         self.about_close.setText(_translate("about", "Close"))
