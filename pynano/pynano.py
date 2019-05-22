@@ -719,7 +719,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         if self.version < new_version:
             QMessageBox.information(
                 self, self.tr("Update"), self.tr(
-                        "Version {}is available\nPlease  execution command to update\n>> git fetch --all \n>> git reset --hard origin/master\n>>git pull\n{}".format(new_version,feature)), QMessageBox.Ok)
+                        "Version {} is available\nPlease  execution command to update\n>> git fetch --all \n>> git reset --hard origin/master\n>>git pull\n{}".format(new_version,feature)), QMessageBox.Ok)
             QtGui.QDesktopServices.openUrl(
                     QtCore.QUrl('https://github.com/decacent/PyNano/releases'))
         else:
@@ -744,7 +744,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
             if self.version < new_version:
                 QMessageBox.information(
                     self, self.tr("Update"), self.tr(
-                        "Version {}is available\nPlease  execution command to update\n>> git fetch --all \n>> git reset --hard origin/master\n>>git pull\n{}".format(new_version,feature)), QMessageBox.Ok)
+                        "Version {} is available\nPlease  execution command to update\n>> git fetch --all \n>> git reset --hard origin/master\n>>git pull\n{}".format(new_version,feature)), QMessageBox.Ok)
                 QtGui.QDesktopServices.openUrl(
                     QtCore.QUrl('https://github.com/decacent/PyNano/releases'))
             else:
