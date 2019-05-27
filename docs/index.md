@@ -10,33 +10,18 @@ Note: no .exe build will support any more.
 
 #### For Windows:
 
-1. Install the python >3.5 and add the python into the environment variable.  [Anaconda](https://www.anaconda.com/download/) is  recommended. 
+1. Install the python >3.5 and add the python into the environment variable.  
+  [Anacondas](https://repo.anaconda.com/archive/) is  recommended. 
 
 Install the [git bash for windows](https://gitforwindows.org/).
 
-2. download the source file. Direct the .zip file or using the git clone. Git for windows is needed.
+2. download the source file. Direct download the [.zip](https://github.com/decacent/PyNano/releases) file or using the git clone. Git for windows is needed.
 
    ```sh
    git clone https://github.com/decacent/PyNano.git
    ```
 
-3. Install the requirement. 
-
-    If you use python package of anaconda. Most of package have already included into it. Just need run the following command.
-
-   ```shell
-   pip install nptdms
-   pip install PyWavelets
-   ```
-
-   If else, you need install all the package that required.
-
-   ```
-   cd PyNano
-   pip install -r requirements.txt
-   ```
-
-4. Run. Double click the file pynano.sh or 
+3. Run. Double click the file pynano.sh or run following command
 
    ```sh
    python pynano.py
@@ -58,7 +43,7 @@ If you don‘t konw how to do it. Please throw your mac laptop into trash and go
 
 **2**: preview the original data.
 
-**3**: start the analysis
+**3**: setup the parameters and start the analysis
 
 **4**: preview the fitting result.
 
