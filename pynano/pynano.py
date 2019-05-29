@@ -1549,6 +1549,7 @@ if __name__ == '__main__':
     '''
     主函数
     '''
+    QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
     app = QApplication(sys.argv)
 
     # if os.path.exists('a.ini'):
