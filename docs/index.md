@@ -35,7 +35,7 @@ If you don‘t konw how to do it. Please throw your mac laptop into trash and go
 
 ## PyNano interface
 
-![ui1](E:\Develop\Python\PyNano\docs\ui1.png)
+![ui1](ui1.png)
 
 #### **Button function**
 
