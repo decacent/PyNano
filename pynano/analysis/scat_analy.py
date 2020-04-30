@@ -31,7 +31,7 @@ import pywt
 import pywt._extensions._cwt
 from time import strftime
 from itertools import groupby, chain
-
+from scipy import signal
 from scipy.signal import butter, lfilter
 from sklearn.cluster import KMeans, DBSCAN
 from scipy.signal import medfilt
@@ -1348,3 +1348,35 @@ def pointsaltation(
 
     result = np.array(result).T
     return result, data1
+
+
+def rmsPSD(data,fs=100000,window='hann',):
+    length = 524288 if len(data) >= 65536 else prepow2(len(data))
+    ps=signal.welch(data,fs,window,nperseg=length )
+    rms=np.sqrt(np.sum(ps[1])*ps[0][1])
+    return rms
+
+
+
+
+def nextpow2(i):
+    """
+    @brief Find 2^n that is equal to or greater than.
+    @param i [int] 数据长度
+    @return 返回i长度的下个2**n次的n
+    """
+    n = 1
+    while n < i: n *= 2
+    return n
+
+def prepow2(i):
+    """
+    @brief Find 2^n that is equal to or greater than.
+    @param i [int] 数据长度
+    @return 返回i长度的下个2**n次的n
+    """
+    n = 1
+    while n < i:
+        s = n
+        n *= 2
+    return s
