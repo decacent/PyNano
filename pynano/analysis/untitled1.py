@@ -25,7 +25,7 @@ from sklearn.datasets.samples_generator import make_blobs
 from sklearn.preprocessing import StandardScaler
 #from scipy.cluster.vq import kmeans, kmeans2
 from axonio import  Abf_io
-from PyQt5.Qt import  QFileDialog
+from PySide2.Qt import  QFileDialog
 from collections import OrderedDict
 
 def butter_lowpass(cutoff, fs, order=5):
@@ -276,7 +276,7 @@ def signal_extract_cluster(
             
             data_s=np.array((time[start_point:end_point]/sam,
                              current[start_point:end_point])).T
-            res_temp=signal_cluster(data=data_ s,fs=sam,cluster=2,kernel_size=51,th=th/2)
+            res_temp=signal_cluster(data=data_s,fs=sam,cluster=2,kernel_size=51,th=th/2)
             
             if res_temp is None:
                 continue
