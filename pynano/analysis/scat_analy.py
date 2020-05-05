@@ -27,8 +27,9 @@ You are not expected to understand this.
 '''
 
 import numpy as np
-import pywt
-import pywt._extensions._cwt
+#import pywt
+#import pywt._extensions._cwt
+from pywt import wavedec, waverec
 from time import strftime
 from itertools import groupby, chain
 from scipy import signal
@@ -54,20 +55,20 @@ def butter_lowpass_filter(data, cutoff, fs, order=5):
     return y
 
 
+
 def wavelet_denoising(data):
     '''
     小波降噪
     '''
-
-    db4 = pywt.Wavelet('db8')
+    #db4 = pywt.Wavelet('db8')
     if data is not None:
         # 分解
-        coeffs = pywt.wavedec(data, db4)
+        coeffs = wavedec(data, 'db4')
         # 高频系数置零
         coeffs[len(coeffs) - 1] *= 0
         coeffs[len(coeffs) - 2] *= 0
         # 重构
-        meta = pywt.waverec(coeffs, db4)
+        meta = waverec(coeffs, 'db4')
         return meta
 
 

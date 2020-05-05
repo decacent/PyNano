@@ -5,7 +5,7 @@
 @author: Wnight
 """
 from ui.tool_ui import *
-from PyQt5.QtWidgets import QMainWindow
+from PySide2.QtWidgets import QMainWindow
 from tool.calPore import Cacl
 #from tool.tdms import Tdms_read
 

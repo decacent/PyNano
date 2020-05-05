@@ -29,10 +29,11 @@ import time
 from requests import get
 import traceback
 
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtGui import QPixmap, QMovie
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QSplashScreen, QDialog
+from PySide2 import QtCore, QtGui, QtWidgets
+from PySide2.QtCore import Signal
+#import PySide.QtCore.pyqtSignal
+from PySide2.QtGui import QPixmap, QMovie
+from PySide2.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QSplashScreen, QDialog
 
 import matplotlib as mpl
 
@@ -66,7 +67,7 @@ class Extract_1(QtCore.QThread):
     '''
     信号提取线程，用于数据处理部分，该过程消耗时间较长。
     '''
-    trigger = pyqtSignal(list)
+    trigger = Signal(list)
 
     def __init__(
             self,
@@ -231,7 +232,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         # _translate = QtCore.QCoreApplication.translate
         self.toolWindow = Analy_tool()
         self.verticalLayout_11.addWidget(self.toolWindow)
-        self.version = 2.5
+        self.version = 2.6
         self.language = langues
         self.comboBox.setCurrentIndex(2)
         # 初始化信号提取部分变量
@@ -1165,7 +1166,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                 self.ax3.cla()
                 self.statusBar().showMessage(self.tr('Plotting histogram...'))
                 self.ax3.hist(self.extracted_signal[:, la], bins=self.spinBox_5.value(
-                ), normed=0, range=(s1, s2))
+                ), range=(s1, s2))
                 self.ax3.set_yticklabels(
                     np.round(self.ax3.get_yticks() / len(self.extracted_signal[:, la]), 2))
                 self.ax3.set_ylabel('Probability')
@@ -1538,7 +1539,8 @@ class MovieSplashScreen(QSplashScreen):
         self.movie.frameChanged.connect(self.onNextFrame)
         self.movie.start()
 
-    @QtCore.pyqtSlot()
+    #@QtCore.pyqtSlot()
+    @QtCore.Slot()
     def onNextFrame(self):
         pixmap = self.movie.currentPixmap()
         self.setPixmap(pixmap)
