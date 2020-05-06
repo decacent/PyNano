@@ -3,3 +3,4 @@
   "Version": "2.6",
   "requires": true,
   "Feature": "Replace the PyQt5 by PySide2.\nFeature:\n Support for Python 3.8.\n Please conduct the cmd .\n 'pip install -i https://pypi.tuna.tsinghua.edu.cn/simple PySide2'. \n For update: git pull origin master" 
+}
