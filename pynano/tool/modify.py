@@ -23,7 +23,7 @@
 import sys
 import scipy.io as sio
 import os
-from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QApplication
+from PyQt5.QtWidgets import QMainWindow, QFileDialog, QMessageBox, QApplication
 #from nptdms import TdmsFile
 import numpy as np
 from ui.modify_ui import Ui_Form

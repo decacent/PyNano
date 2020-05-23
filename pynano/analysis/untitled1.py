@@ -25,7 +25,7 @@ from sklearn.datasets.samples_generator import make_blobs
 from sklearn.preprocessing import StandardScaler
 #from scipy.cluster.vq import kmeans, kmeans2
 from axonio import  Abf_io
-from PySide2.Qt import  QFileDialog
+from PyQt5.Qt import  QFileDialog
 from collections import OrderedDict
 
 def butter_lowpass(cutoff, fs, order=5):

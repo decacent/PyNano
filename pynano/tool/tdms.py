@@ -23,7 +23,7 @@
 
 import scipy.io as sio
 import os
-from PySide2.QtWidgets import QMainWindow, QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QMainWindow, QFileDialog, QMessageBox
 from nptdms import TdmsFile
 import numpy as np
 from ui.tdms_ui import Ui_Read_Tdms

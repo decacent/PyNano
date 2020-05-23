@@ -29,11 +29,11 @@ import time
 from requests import get
 import traceback
 
-from PySide2 import QtCore, QtGui, QtWidgets
-from PySide2.QtCore import Signal
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import pyqtSignal
 #import PySide.QtCore.pyqtSignal
-from PySide2.QtGui import QPixmap, QMovie
-from PySide2.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QSplashScreen, QDialog
+from PyQt5.QtGui import QPixmap, QMovie
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QSplashScreen, QDialog
 
 import matplotlib as mpl
 
@@ -67,7 +67,7 @@ class Extract_1(QtCore.QThread):
     '''
     信号提取线程，用于数据处理部分，该过程消耗时间较长。
     '''
-    trigger = Signal(list)
+    trigger = pyqtSignal(list)
 
     def __init__(
             self,
@@ -552,7 +552,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         file_choices = "mat (*.mat)"
         path = QFileDialog.getSaveFileName(
             self, self.tr('Save Result'), '', file_choices)
-        if path[0] is not '':
+        if path[0] != '':
             if path[1] == 'mat (*.mat)':
                 self.markov_data['Current'] = self.extracted_signal[:, 0]
                 self.markov_data['Time'] = self.extracted_signal[:, 1]
@@ -837,7 +837,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         else:
             head_row1 = head7
 
-        if path[0] is not '':
+        if path[0] != '':
             try:
                 if path[1] == 'mat (*.mat)':
                     mat_dict = {}

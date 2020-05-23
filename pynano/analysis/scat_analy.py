@@ -965,7 +965,7 @@ def collision_analy(
     signal_peak_time = re_peak_time[temp3]
     signal_peak_current = re_peak_current[temp3]
     t1 = np.arange(len(re_peak_time))[np.in1d(re_peak_time, signal_peak_time)]
-    result = [[], [], [], [], [], []]
+    result = [[], [], [], [], [], [],[]]
     temp4, temp5 = 0, 0
     if not is_up:
         for index, value in enumerate(signal_peak_current):
@@ -1016,6 +1016,7 @@ def collision_analy(
             result[3].append(temp_base)  # 基线
             result[4].append(temp_base - value)  # Delta I
             result[5].append(charge)  # 积分电荷
+            result[6].append(re_peak_time[t1[index] - 1]/sam*1000)  # 积分电荷
     else:
         for index, value in enumerate(signal_peak_current):
             j = signal_peak_time[index]
@@ -1064,6 +1065,7 @@ def collision_analy(
             result[3].append(temp_base)  # 基线
             result[4].append(value - temp_base)  # Delta I
             result[5].append(charge)  # 积分电荷
+            result[6].append(re_peak_time[t1[index] - 1]/sam*1000) 
     result = np.array(result).T
     return result, data1
 
