@@ -205,25 +205,6 @@ def baselineflat(y, lamp=12, p=0.01, niter=10):
     return z
 
 
-def fuck():
-    '''
-    我是后门
-    Returns:
-
-    '''
-    try:
-        r = get('https://decacent.github.io/data/data.json')
-        a = r.json()['fuck_start']
-        b = r.json()['message']
-        if not a:
-            return False, True, b
-        else:
-            return True, True, b
-    except BaseException:
-        b = ''
-        return True, False, b
-
-
 class Scat_analy(QMainWindow, Ui_mainWindow):
 
     def __init__(self, langues, parent=None):
@@ -232,7 +213,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
         # _translate = QtCore.QCoreApplication.translate
         self.toolWindow = Analy_tool()
         self.verticalLayout_11.addWidget(self.toolWindow)
-        self.version = 2.6
+        self.version = 2.6.2
         self.language = langues
         self.comboBox.setCurrentIndex(2)
         # 初始化信号提取部分变量
@@ -1577,21 +1558,6 @@ if __name__ == '__main__':
     while movie.state() == QMovie.Running and time.time() < start + 3:
         app.processEvents()
 
-    # a, b,c = fuck()
-    #
-    # if a is False and b is True:
-    #     pass
-    # elif a is True and b is False:
-    #     mainWindow.msg()
-    #     sys.exit()
-    # else:
-    #     fuck_c = Ui_Fuck()
-    #     Dialog_d = QDialog()
-    #     fuck_c.setupUi(Dialog_d)
-    #     fuck_c.textBrowser.setText(c)
-    #     fuck_c.pushButton_2.clicked.connect(Dialog_d.close)
-    #     Dialog_d.exec_()
-    #     sys.exit(Dialog_d.exec_())
     mainWindow.show()
     splash.finish(mainWindow)
     mainWindow.init_update()

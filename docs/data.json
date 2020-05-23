@@ -1,6 +1,6 @@
 {
   "name": "PyNano",
-  "Version": "2.6",
+  "Version": "2.6.2",
   "requires": true,
-  "Feature": "Replace the PyQt5 by PySide2.\nFeature:\n Support for Python 3.8.\n Please conduct the cmd .\n 'pip install -i https://pypi.tuna.tsinghua.edu.cn/simple PySide2'. \n For update: git pull origin master" 
+  "Feature": "Create the new Pyqt5 branch and never update anymore.\n The new update will replace the PyQt5 by PySide2.\nFeature:\n Support for Python 3.8.\n Please conduct the cmd .\n 'pip install -i https://pypi.tuna.tsinghua.edu.cn/simple PySide2'. \n For new version: git pull origin master \n For PyQt5 Version: git pull origin pyqt5"
 }
