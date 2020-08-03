@@ -1161,7 +1161,6 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
 
     @error
     def loadabf(self):
-
         self.statusBar().showMessage(self.tr("Open file"))
         self.fn = QFileDialog.getOpenFileName(self, self.tr(
             "Open file"), filter='Abf Files (*.abf);;Xdat Files (*.xdat);;Tdms Files (*.tdms)')
@@ -1253,7 +1252,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                 self.label_6.setAlignment(QtCore.Qt.AlignCenter)
                 self.label_sample_rate.setText('%dk' % (self.sam / 1000))
                 self.label_sample_rate.setAlignment(QtCore.Qt.AlignCenter)
-            except BaseException:
+            except BaseException as e:
                 self.statusBar().showMessage(self.tr('File load failed'))
                 QMessageBox.information(self, self.tr("Alert"), self.tr(
                     "File load error，Please chaeck the tdms file formats!"), QMessageBox.Ok)
