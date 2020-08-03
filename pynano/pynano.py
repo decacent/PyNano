@@ -53,6 +53,7 @@ from analysis.scat_analy import signal_extract, collision_analy, markov, signal_
 from matplotlib.widgets import SpanSelector, Cursor, Slider
 from analysis.axonio import Abf_io
 from analysis.xdatio import Xdat_io
+from analysis.tdmsio import Tdms_io
 from tool.tool import Analy_tool
 from ui.pynano_ui import Ui_mainWindow
 from ui.input_par import Ui_Dialog
@@ -402,7 +403,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                     s2 = max(self.data[self.sweep]
                              [self.star_point:self.end_point, 0])
                     ax.hist(self.data[self.sweep][self.star_point:self.end_point, 0],
-                            bins=bin_num, normed=1, range=(s1, s2), facecolor='blue')
+                            bins=bin_num, range=(s1, s2), facecolor='blue')
                     ax.set_xlim(s1, s2)
                 else:
                     s1 = min(self.data[self.sweep]
@@ -410,7 +411,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                     s2 = max(self.data[self.sweep]
                              [self.star_point:self.end_point])
                     ax.hist(self.data[self.sweep][self.star_point:self.end_point],
-                            bins=bin_num, normed=1, range=(s1, s2), facecolor='blue')
+                            bins=bin_num, range=(s1, s2), facecolor='blue')
                     ax.set_xlim(s1, s2)
 
             else:
@@ -1163,7 +1164,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
 
         self.statusBar().showMessage(self.tr("Open file"))
         self.fn = QFileDialog.getOpenFileName(self, self.tr(
-            "Open file"), filter='Abf Files (*.abf);;Xdat Files (*.xdat)')
+            "Open file"), filter='Abf Files (*.abf);;Xdat Files (*.xdat);;Tdms Files (*.tdms)')
         print(self.fn[0])
         print(self.fn[1])
         if self.fn[0] == '':
@@ -1201,7 +1202,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                 self.channel = self.data[0].shape[1]
             except BaseException:
                 self.channel = 0
-        else:
+        elif self.fn[1] == 'Xdat Files (*.xdat)':
             try:
                 f = Xdat_io(self.fn[0])
                 self.data, self.sam, self.sweeps = f.read_xdat()
@@ -1230,6 +1231,41 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
                     self.tr("Alert"),
                     self.tr("Fail load failed"),
                     QMessageBox.Ok)
+        elif self.fn[1] == 'Tdms Files (*.tdms)':
+            self.statusBar().showMessage(self.tr("Reading TDMS.."))
+            print(self.fn[1])
+            try:
+                print(self.fn[0])
+                f = Tdms_io(self.fn[0])
+                self.data, self.sam, self.sweeps = f.read()
+                print('success')
+                self.time = np.arange(
+                    0, len(self.data[0]) / self.sam, 1 / self.sam)
+                self.time = self.time[0:len(self.data[0])]
+                self.is_read = True
+                self.statusBar().showMessage(
+                    self.tr('TDMS load success..') +
+                    os.path.basename(
+                        self.fn[0]))
+                QMessageBox.information(
+                    self,
+                    self.tr("Notice"),
+                    self.tr("Load success"),
+                    QMessageBox.Ok)
+                self.label_6.setText('1/%d' % (self.sweeps))
+                self.label_6.setAlignment(QtCore.Qt.AlignCenter)
+                self.label_sample_rate.setText('%dk' % (self.sam / 1000))
+                self.label_sample_rate.setAlignment(QtCore.Qt.AlignCenter)
+            except BaseException as e:
+                print(e)
+                self.statusBar().showMessage(self.tr('File load failed'))
+                QMessageBox.information(self, self.tr("Alert"), self.tr(
+                    "File load error，Please chaeck the tdms file formats!"), QMessageBox.Ok)
+
+            try:
+                self.channel = self.data[0].shape[1]
+            except BaseException:
+                self.channel = 0
 
     @error
     def viewdata(self):
