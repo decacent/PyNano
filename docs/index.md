@@ -2,7 +2,7 @@
 
 PyNano  is a nanopore data analysis interface, which can be used to analysis the data of bionanopore, solid-state nanopore and  similar kinds of  pulse signal.	
 
-In this project, the UI is using the PyQt5. The data processing is using the [numpy](http://www.numpy.org/), [scipy](https://www.scipy.org/) and [sklearn](http://scikit-learn.org/stable/). The data visualization is using [matplotlib](https://matplotlib.org/).
+In this project, the UI is using the PyQt5(branch pyqt5) or Pyside2 (Branch master). The data processing is using the [numpy](http://www.numpy.org/), [scipy](https://www.scipy.org/), sympy, nptdms, pandas and [sklearn](http://scikit-learn.org/stable/). The data visualization is using [matplotlib](https://matplotlib.org/).
 
 ## Installation 
 
@@ -10,12 +10,18 @@ Note: no .exe build will support any more.
 
 #### For Windows:
 
+The recommended install method for branch master
+1. install the miniconda （py38)
+2. Conduct the commend ```pip install -r requirements.txt``` to build the pynano runtime
+
+If you use Anaconda3, please using the branch pyqt5.
+
 1. Install the python >3.5 and add the python into the environment variable.  
   [Anacondas](https://repo.anaconda.com/archive/) is  recommended. 
 
 Install the [git bash for windows](https://gitforwindows.org/).
 
-2. download the source file. Direct download the [.zip](https://github.com/decacent/PyNano/releases) file or using the git clone. Git for windows is needed.
+2. Download the source file. Direct download the [.zip](https://github.com/decacent/PyNano/releases) file or using the git clone. Git for windows is needed.
 
    ```sh
    git clone https://github.com/decacent/PyNano.git
@@ -31,7 +37,7 @@ Install the [git bash for windows](https://gitforwindows.org/).
 
 Just build the python development environment and run pynano.py 
 
-If you don‘t konw how to do it. Please throw your mac laptop into trash and go back the fuck windows.
+If you don't konw how to do it. Please throw your mac laptop into trash and go back the fuck windows.
 
 ## PyNano interface
 
@@ -65,11 +71,15 @@ The  parameter  noise(RMS) is need:![ui2](ui2.png)
 
 The explain of the parameter please see the annotation of the function *collision_analy* in `pynano/analysis/scat_analy.py`
 
-**Mode 3: nanopore.** This method is used to fit the single-peak signal of nanopore. ![ui6](ui6.png)
+**Mode 3: nanopore.** This method is used to fit the single-peak signal of nanopore. ![ui6](ui6.png)  
 
-**Mode 4: mutl_peak.**Fit the mutl-peak signal of nanopore.
+**Mode 4: mutl_peak.** Fit the mutl-peak signal of nanopore.
 
-![ui7](ui7.png)
+![ui7](ui7.png)   
+
+
+**Mode 5: mutl_Cluster.** Fit the mutl-peak signal of nanopore using the Cluster methods.   
+**Mode 6: pointsaltation.** Fit the single-peak signal of nanopore automaticly.
 
 #### API
 
