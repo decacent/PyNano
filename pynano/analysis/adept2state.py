@@ -46,6 +46,7 @@ def stepResponseFunc(t, tau1, tau2, mu1, mu2, a, b):
     except:
         raise
 
+
 def objfunc(params, t, data):
     try:
         tau1 = params['tau1'].value
@@ -60,7 +61,8 @@ def objfunc(params, t, data):
         return model - data
     except KeyboardInterrupt:
         raise
-     
+
+
 
 def fit_adept2(data,dt,i0,i0sig,estart,eend):
     fitTol=1e-7
@@ -91,7 +93,7 @@ def fit_adept2(data,dt,i0,i0sig,estart,eend):
     result=optfit.leastsq(xtol=fitTol,ftol=fitTol,maxfev=fitIters)
     mdOpenChCurrent     = result.params['b'].value 
     mdBlockedCurrent    = result.params['b'].value - result.params['a'].value
-    mdEventStart        = result.params['mu1'].value 
+    mdEventStart        = result.params[' '].value 
     mdEventEnd          = result.params['mu2'].value
     mdRCConst1          = result.params['tau1'].value
     mdRCConst2          = result.params['tau2'].value
@@ -107,6 +109,7 @@ def fit_adept2(data,dt,i0,i0sig,estart,eend):
     b = result.params['b'].value
     s2=stepResponseFunc(ts,tau1,tau2,mu1,mu2,a,b)
     return [mdOpenChCurrent,mdBlockedCurrent,mdEventStart,mdEventEnd,mdRCConst1,mdRCConst2,mdResTime],s2
+
 
 if __name__ == '__main__':
     pass
