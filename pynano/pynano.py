@@ -373,7 +373,7 @@ class Scat_analy(QMainWindow, Ui_mainWindow):
             QtWidgets.QMessageBox.Yes,
             QtWidgets.QMessageBox.No)
         if reply == QtWidgets.QMessageBox.Yes:
-            self.set_writeini()
+            #self.set_writeini()
             event.accept()
         else:
             event.ignore()
