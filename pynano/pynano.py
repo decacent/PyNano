@@ -48,7 +48,7 @@ import analysis, ui, tool
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationToolbar
 from analysis.scat_analy import signal_extract, collision_analy, markov, signal_extract3, \
-    signal_extract_cluster, signal_extract2, pointsaltation
+    signal_extract_cluster, signal_extract2, pointsaltation,signal_adept2
 #from analysis.pointSaltation import signal_extract2
 from matplotlib.widgets import SpanSelector, Cursor, Slider
 from analysis.axonio import Abf_io
@@ -137,12 +137,19 @@ class Extract_1(QtCore.QThread):
                                                                                n_cluster=self.n_cluster,
                                                                                kernel_size=self.k_size, is_up=False
                                                                                )
-            else:
+            elif self.model == 5:
                 self.extracted_signal, self.fit_data = pointsaltation(init_time=self.init_time, data=self.data,
                                                                                sigma=self.sigma,
                                                                                sam=self.sam,
                                                                                is_up=False
                                                                                )
+            else:
+                self.extracted_signal, self.fit_data = signal_adept2(init_time=self.init_time, data=self.data,
+                                                                       peak_th=self.peak_th, base=self.base,
+                                                                       th=self.th,
+                                                                       sam=self.sam, is_filter=self.is_filter,
+                                                                       filter=self.filter, is_up=self.is_up)                
+
 
             self.is_success = True
             self.trigger.emit(
