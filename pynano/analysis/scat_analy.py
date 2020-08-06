@@ -1524,7 +1524,6 @@ def signal_adept2(
             try:
                 rs,n=fit_adept2(temp_fitdata,1/sam,temp_base,baseSD,0,len(temp_fitdata))
             except Exception as e:
-                print(e)
                 continue
             temp_time = (end_point - start_point) / sam
             temp4 = np.array(temp4)

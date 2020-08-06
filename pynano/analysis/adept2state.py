@@ -90,10 +90,10 @@ def fit_adept2(data,dt,i0,i0sig,estart,eend):
 
     optfit=Minimizer(objfunc, params, fcn_args=(ts,edat,))
     optfit.prepare_fit()
-    result=optfit.leastsq(xtol=fitTol,ftol=fitTol,maxfev=fitIters)
+    result=optfit.leastsq(xtol=fitTol,ftol=fitTol,max_nfev=fitIters)
     mdOpenChCurrent     = result.params['b'].value 
     mdBlockedCurrent    = result.params['b'].value - result.params['a'].value
-    mdEventStart        = result.params[' '].value 
+    mdEventStart        = result.params['mu1'].value 
     mdEventEnd          = result.params['mu2'].value
     mdRCConst1          = result.params['tau1'].value
     mdRCConst2          = result.params['tau2'].value
