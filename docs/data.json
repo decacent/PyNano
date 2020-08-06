@@ -1,6 +1,6 @@
 {
   "name": "PyNano",
-  "Version": "2.8",
+  "Version": "2.9",
   "requires": true,
-  "Feature": "Add the Tdms Files Supports, Update the Install Docs."
+  "Feature": "Add the Mosaic adept2state method, Update the Install Docs."
 }
