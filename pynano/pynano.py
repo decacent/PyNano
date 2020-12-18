@@ -196,23 +196,6 @@ def error(func,**kwargs):
     return wrapper
 
 
-def baselineflat(y, lamp=12, p=0.01, niter=10):
-    """
-    拉平基线
-    """
-    lam = 10 ** lamp
-    L = len(y)
-    D = sparse.csc_matrix(np.diff(np.eye(L), 2))
-    w = np.ones(L)
-    z = 0
-    for i in range(niter):
-        W = sparse.spdiags(w, 0, L, L)
-        Z = W + lam * D.dot(D.transpose())
-        z = spsolve(Z, w * y)
-        w = p * (y > z) + (1 - p) * (y < z)
-    return z
-
-
 class Scat_analy(QMainWindow, Ui_mainWindow):
 
     def __init__(self, langues, parent=None):
