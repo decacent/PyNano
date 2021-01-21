@@ -1,0 +1,9 @@
+sympy
+PyWavelets
+matplotlib
+scipy
+npTDMS
+numpy
+requests
+PySide2
+scikit_learn

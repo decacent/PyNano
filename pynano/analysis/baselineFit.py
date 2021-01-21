@@ -46,15 +46,15 @@ def baseline_als(y, lam=12, p=0.01, niter=10):
     '''
     优化1
     '''
-  L = len(y)
-  D = sparse.diags([1,-2,1],[0,-1,-2], shape=(L,L-2))
-  w = np.ones(L)
-  for i in range(niter):
-    W = sparse.spdiags(w, 0, L, L)
-    Z = W + lam * D.dot(D.transpose())
-    z = spsolve(Z, w*y)
-    w = p * (y > z) + (1-p) * (y < z)
-  return z
+    L = len(y)
+    D = sparse.diags([1,-2,1],[0,-1,-2], shape=(L,L-2))
+    w = np.ones(L)
+    for i in range(niter):
+        W = sparse.spdiags(w, 0, L, L)
+        Z = W + lam * D.dot(D.transpose())
+        z = spsolve(Z, w*y)
+        w = p * (y > z) + (1-p) * (y < z)
+    return z
 
 def baseline_als_optimized(y, lam, p, niter=10):
     '''
@@ -121,7 +121,8 @@ def airPLS(x, lambda_=100, porder=1, itermax=15):
         d=x-z
         dssn=np.abs(d[d<0].sum())
         if(dssn<0.001*(abs(x)).sum() or i==itermax):
-            if(i==itermax): print 'WARING max iteration reached!'
+            if(i==itermax): 
+                print('WARING max iteration reached!')
             break
         w[d>=0]=0 # d>0 means that this point is part of a peak, so its weight is set to 0 in order to ignore it
         w[d<0]=np.exp(i*np.abs(d[d<0])/dssn)

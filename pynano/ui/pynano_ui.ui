@@ -17,7 +17,7 @@
    <string>PyNano</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="images.qrc">
+   <iconset>
     <normaloff>:/img/img2.png</normaloff>:/img/img2.png</iconset>
   </property>
   <property name="animated">
@@ -154,7 +154,7 @@ QPushButton:hover, QPushButton:pressed , QPushButton:checked
          </property>
          <property name="minimumSize">
           <size>
-           <width>113</width>
+           <width>95</width>
            <height>30</height>
           </size>
          </property>
@@ -1582,7 +1582,7 @@ QPushButton:hover, QPushButton:pressed , QPushButton:checked
                 </property>
                 <property name="minimumSize">
                  <size>
-                  <width>49</width>
+                  <width>40</width>
                   <height>0</height>
                  </size>
                 </property>
@@ -2063,7 +2063,7 @@ QSpinBox::down-button {
                <widget class="QComboBox" name="comboBox_3">
                 <property name="minimumSize">
                  <size>
-                  <width>49</width>
+                  <width>40</width>
                   <height>0</height>
                  </size>
                 </property>

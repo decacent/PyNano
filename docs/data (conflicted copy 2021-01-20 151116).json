@@ -1,0 +1,6 @@
+{
+  "name": "PyNano",
+  "Version": "2.9",
+  "requires": true,
+  "Feature": "Add the Mosaic adept2state method"
+} 

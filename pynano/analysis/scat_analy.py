@@ -1378,6 +1378,10 @@ def signal_adept2(
 
     #current = wavelet_denoising(data)
     current = np.copy(data)
+    #current = np.array(current).reshape(-1, )
+    #current = wavelet_denoising(data) # 小波降噪消除噪音
+    #current = current[0:data.size]
+
     time = np.arange(len(current))
     if is_filter:
         current = butter_lowpass_filter(current, filter, 100000, 5)  # 低通滤波
